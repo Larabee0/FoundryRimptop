@@ -1,0 +1,150 @@
+.bill-config-form{
+    display: flex;
+    flex-direction: column;
+    
+    .bill-title{
+        
+        margin: 4px;
+        font-size: large;
+    }
+    .display-horizontal{
+        display: flex;
+        flex-direction: row;
+    }
+    .display-vertical{
+        display: flex;
+        flex-direction: column;
+    }
+    .main-container{
+        .body{
+            .bill-double-slider{
+                margin: 4px;
+                margin-top: 2px;
+                margin-bottom: 2px;
+                padding: 4px;
+                padding-top: 2px;
+                padding-bottom: 2px;
+                .double-slider-label{
+                    text-align: center;
+                }
+            }            
+            .option-toggle{    
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .count-adjust-label{
+                margin: 4px;
+                padding: 4px;
+            }
+            .count-adjust-button{
+                width: 40px;
+            }
+            .count-input-box{
+                width: 50px;
+                margin: 4px
+            }
+            .left-column{
+                width: 200px;
+                .recipe-info-icon{
+                    margin-top: 10px;
+                }
+                
+                .recipe-info-icon:hover{
+                    text-shadow: 0 0 10px var(--color-shadow-primary);
+                }
+                .suspend-button{
+                    margin: 4px;
+                }
+                .description-area{
+                    margin: 4px;
+                }
+            }
+            .middle-column{
+                flex-shrink: 1;
+                margin: 5px;
+                margin-left: 10px;
+                padding: 5px;
+                border: 1px solid var(--color-border-light-primary);
+                width: 238px;
+            }
+            .right-column{
+                flex-grow: 1;
+                margin: 5px;
+                margin-right: 10px;
+                padding: 5px;
+                border: 1px solid var(--color-border-light-primary);
+                height: 500px;
+                .clear-allow-container{
+                    margin: 4px;
+                }
+                .search-label{
+                    margin: 4px;
+                }
+                .ingredients-list{
+                    flex-grow: 100;
+                    overflow-x: hidden;
+                    overflow-y: scroll;
+                    .bill-ingredient-container{
+                        display: flex;
+                        flex-direction: column;
+                        .ingredient-toggle{
+                            flex-grow: 1;
+                            margin-left:4px;
+                            margin-right:4px;
+                        }
+                        .ingredient-toggle{
+                            display: flex;
+                            flex-direction: row;
+                            justify-content: space-between;
+                            align-items: center;
+                        }
+                        .ingredient-toggle:hover{
+                            background-color: #868686;
+                        }
+                        .fold-out{
+                            display: flex;
+                            flex-direction: column;
+                            .category-container{
+                                display: flex;
+                                flex-direction: column;
+                                margin-left: 30px;
+                            }
+                        }
+                        .toggleable-item{
+                            display: flex;
+                            flex-direction: row;
+                            justify-content: space-between;
+                            align-items: center;
+                        }
+                        .toggle-off-icon{
+                            font-size: large;
+                            color: #D92626;
+                        }
+                        .toggle-off-icon:hover{
+                            color: #411B22;
+                        }
+                        .toggle-on-icon{
+                            font-size: large;
+                            color: #26D926;
+                        }
+                        .toggle-on-icon:hover{
+                            color: #0B9822
+                        }
+                        .toggle-partial-icon{
+                            color: #DCB22E;
+                            font-size: 18px;
+                        }
+                        .toggle-partial-icon:hover{
+                            color: #427D29;
+                        }
+                        .fold-out-icon:hover{
+                            text-shadow: 0 0 10px var(--color-shadow-primary);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

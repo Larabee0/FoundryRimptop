@@ -1,0 +1,249 @@
+<div class="bio-card-container">
+    <div class="upper-area">
+        <div class="top-bar">            
+            {{#unless editBio}}
+            <i class="data-refresh-icon bio-refresh-icon fa-fw fas fa-arrows-rotate" data-action="refreshBio" data-tooltip="Refresh bio data from RimWorld app"  data-tooltip-direction="RIGHT"></i>
+            <label class="pawn-name">{{Name}}</label>
+            {{/unless}}
+            {{#if editBio}}
+            <i class="passion-icon fa-fw fas randomise" id="randomise-name" data-tooltip="Randomises the full name for the pawn. <br><br>This will adhere to the pawn's gender.<br><br>Pawn's with no gender draw from the male & female name lists." data-tooltip-direction="LEFT"></i>
+            {{#if editor.basic.FirstName}}
+            <label class="pawn-name-desc">First name</label>
+            <input id="name-first-name" class="pawn-name-field" type="text" value="{{editor.basic.FirstName}}"></input>
+            {{/if}}
+            <label class="pawn-name-desc">Primary display name</label>
+            <input id="name-nick-name" class="pawn-name-field" type="text" value="{{editor.basic.NickName}}"></input>
+            {{#if editor.basic.LastName}}
+            <label class="pawn-name-desc">Last name</label>
+            <input  id="name-last-name" class="pawn-name-field" type="text" value="{{editor.basic.LastName}}"></input>
+            {{/if}}
+            {{/if}}
+        </div>
+        <div style="display: flex; flex-direction: row;">
+        <label class="switch" data-tooltip="Edit character bio"  data-tooltip-direction="RIGHT">
+                <input type="checkbox" data-action="editBioToggle" {{checked editBio}}>
+                <span class="slider"></span>
+        </label>
+        {{#if editBio}}
+        <label style="font-weight: bold; margin-left: 4px">EDIT MODE</label>
+        {{/if}}
+        </div>
+        {{#unless editBio}}
+        <label class="pawn-basic-info" data-tooltip="{{BasicTooltip}}"  data-tooltip-direction="RIGHT" >{{BasicDescription}}</label>
+        {{/unless}}
+        {{#if editBio}}
+        <div class="age-editor">
+            <div class="age-col gender-col">
+                <label class="age-label">Gender</label>
+                <select class="gender-input" name="gender-options">
+                    {{selectOptions editor.genderOptions selected=editor.curGender}}
+                </select>
+            </div>
+            <div class="age-col bio-age-col">
+                <label class="age-label" style="margin-bottom:2px"> Biological age</label>
+                <div class="age-row">
+                    <label class="age-label">Years</label>
+                    <input id="bio-years" class="age-input" type="number" value="{{editor.basic.BioAgeYears}}"></input>
+                </div>
+                <div class="age-row">
+                    <label class="age-label">Days</label>
+                    <input id="bio-days" class="age-input" type="number" value="{{editor.basic.BioAgeDays}}"></input>
+                </div>
+            </div>
+            <div class="age-col chrono-age-col">
+                <label class="age-label" style="margin-bottom:2px"> Chronological age</label>
+                <div class="age-row">
+                    <label class="age-label">Years</label>
+                    <input id="chrono-years" class="age-input" type="number" value="{{editor.basic.ChronoAgeYears}}"></input>
+                </div>
+                <div class="age-row">
+                    <label class="age-label">Days</label>
+                    <input id="chrono-days" class="age-input" type="number" value="{{editor.basic.ChronoAgeDays}}"></input>
+                </div>
+            </div>
+            <div class="age-col body-size-col">
+                <label class="age-label" style="margin-bottom:2px"> Size offsets</label>
+                <div class="age-row">
+                    <label class="age-label">Body size offset</label>
+                    <input id="body-size-offset" class="age-input body-size-input" type="number" value="{{editor.basic.BodySizeOffset}}"></input>
+                    <label class="age-label" style="width: fit-content; margin-left:2px">%</label>
+                </div>
+                {{#if editor.isGM}}
+                <div class="age-row">
+                    <label class="age-label">Health scale offset</label>
+                    <input id="health-scale-offset" class="age-input body-size-input" type="number" value="{{editor.basic.HealthScaleOffset}}"></input>
+                    <label class="age-label" style="width: fit-content; margin-left:2px">%</label>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+        {{/if}}
+    </div>
+    <div class="main-area">
+        <div class="left-stack">
+            <div class="left-container backstroy-container">
+                {{#unless editBio}}
+                {{#each Backstories}}
+                <div class="backstory-item">
+                    <label class="backstory-label">{{Type}}</label>
+                    <label class="backstory-value backstory-label" data-tooltip="{{Tooltip}}" data-tooltip-direction="RIGHT">{{Text}}</label>
+                </div>                
+                {{/each}}
+                {{/unless}}
+                {{#if editBio}}
+                <i class="passion-icon fa-fw fas randomise" id="randomise-backstory" data-tooltip="Randomises backstories for the pawn. <br><br>This will also removes any forced traits provided by backstories.<br> Forced traits are not removed when you manually set the backstory, those previously forced traits just become removalable." data-tooltip-direction="LEFT"></i>
+                <div class="backstory-item">
+                    <label class="backstory-label">Childhood</label>
+                    {{#if (lookup Backstories 0)}}
+                    {{#with (lookup Backstories 0)}}
+                    <button type="button" data-action="editBackstory" data-slot="Childhood" data-def="{{DefName}}" class="backstory-label backstory-button" data-tooltip="<b>Click to change backstory</b><br><br>{{Tooltip}}" data-tooltip-direction="RIGHT">{{Text}}</button>
+                    {{/with}}
+                    {{/if}}
+                    {{#unless (lookup Backstories 0)}}
+                    <button type="button" data-action="editBackstory" data-slot="Childhood" data-def="none" class="backstory-label backstory-button" data-tooltip="<b>Click to change backstory</b>" data-tooltip-direction="RIGHT">No Childhood</button>
+                    {{/unless}}
+                </div>
+                <div class="backstory-item">
+                    <label class="backstory-label">Adulthood</label>
+                    {{#if (lookup Backstories 1)}}
+                    {{#with (lookup Backstories 1)}}
+                    <button type="button" data-action="editBackstory" data-slot="Adulthood" data-def="{{DefName}}" class="backstory-label backstory-button" data-tooltip="<b>Click to change backstory</b><br><br>{{Tooltip}}" data-tooltip-direction="RIGHT">{{Text}}</button>
+                    {{/with}}
+                    {{/if}}
+                    {{#unless (lookup Backstories 1)}}
+                    <button type="button" data-action="editBackstory" data-slot="Adulthood" data-def="none" class="backstory-label backstory-button" data-tooltip="<b>Click to change backstory</b>" data-tooltip-direction="RIGHT">No Adulthood</button>
+                    {{/unless}}
+                </div>
+                {{/if}}
+            </div>
+
+            <div class="editable-left-title">
+                <label class="left-title traits-title">{{{TraitsText}}}</label>
+                {{#if editBio}}
+                <button  type="button" class="add-trait-button" data-action="addTrait" data-tooltip="Opens a diagloue to pick a trait to add to this pawn." data-tooltip-direction="RIGHT">Add trait</button>
+                <i class="passion-icon fa-fw fas randomise" id="randomise-traits" data-tooltip="Randomises traits by removing all traits (except forced by backstory) then generates new traits." data-tooltip-direction="RIGHT"></i>
+                {{/if}}
+            </div>
+
+            <div class="left-container traits-container">
+                <div>
+                    {{#each Traits}}
+                        {{#if ../editBio}}
+
+                            {{#ifEquals tooltip "None" }}
+                                <label class="left-container-label trait-label trait-label-none" data-tooltip="{{tooltip}}" data-tooltip-direction="RIGHT">{{{name}}}</label>
+                            {{/ifEquals}}
+                            {{#ifNotEqual tooltip "None" }}
+                                {{#if Removable}}
+                                    <label data-def="{{DefName}}" data-degree="{{Degree}}" class="left-container-label trait-label" data-tooltip="<b>Double right click to remove this trait</b><br><br>{{tooltip}}" data-tooltip-direction="RIGHT">{{{name}}}</label>
+                                {{/if}}
+                                {{#unless Removable}}
+                                    <label class="left-container-label trait-label" data-tooltip="<b>This trait cannot be removed, it is forced by your backstory</b><br><br>{{tooltip}}" data-tooltip-direction="RIGHT">{{{name}}}</label>
+                                {{/unless}}
+                            {{/ifNotEqual}}
+
+                            
+                        {{/if}}
+
+                        {{#unless ../editBio}}
+                            {{#ifEquals tooltip "None" }}
+                                <label class="left-container-label trait-label trait-label-none" data-tooltip="{{tooltip}}" data-tooltip-direction="RIGHT">{{{name}}}</label>
+                            {{/ifEquals}}
+                            {{#ifNotEqual tooltip "None" }}
+                                <label class="left-container-label trait-label" data-tooltip="{{tooltip}}" data-tooltip-direction="RIGHT">{{{name}}}</label>
+                            {{/ifNotEqual}}
+                        {{/unless}}
+                    {{/each}}
+                </div>
+            </div>
+
+            <label class="left-title incapable-of-title">{{{IncapableOfText}}}</label>
+            <div class="left-container incapable-of-container">
+                <div>
+                    {{#each IncapableOf}}
+                    <label class="left-container-label incapable-of-label" data-tooltip="{{tooltip}}" data-tooltip-direction="RIGHT">{{{name}}}</label>
+                    {{/each}}
+                </div>
+            </div>
+            {{#ifOr Abilities this.editBio}}
+            <label class="left-title abilities-title">{{{AbilitiesText}}}</label>
+            <div class="left-container abilities-container">
+                <div>
+                    {{#each Abilities}}
+                    <label class="left-container-label ability-label" data-tooltip="{{tooltip}}" data-tooltip-direction="RIGHT">{{{name}}}</label>
+                    {{/each}}
+                </div>
+            </div>
+            {{/ifOr}}
+        </div>
+        <div class="right-stack">
+            {{#unless editBio}}
+            {{#each Skills}}
+            <div class="skill-row" data-tooltip="{{Tooltip}}" data-tooltip-direction="RIGHT">
+                <label class="skill-label">{{{Name}}}</label>
+                <div class="passion-container" data-tooltip="Passion: {{Passion}}" data-tooltip-direction="RIGHT">
+                    {{#ifEquals Passion "None" }}
+                    <i class="passion-icon fa-thin fas fa-fire-flame"></i>
+                    {{/ifEquals}}
+                    {{#ifEquals Passion "Minor"}}
+                    <i class="passion-icon fa-fw fas fa-fire-flame"></i>
+                    {{/ifEquals}}
+                    {{#ifEquals Passion "Major"}}
+                    <i class="passion-icon fa-fw fas fa-fire-flame"></i>
+                    <i class="passion-icon passion-icon-major fa-fw fas fa-fire-flame"></i>
+                    {{/ifEquals}}
+                </div>
+                <div class="skill-background-outer" style="width=100%">
+                    <div class="skill-background" style="width:{{BarFill}}%">
+                        <label class="skill-value">{{{Value}}}</label>
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+            {{/unless}}
+            {{#if editBio}}
+            {{#each editor.skills}}
+            <div class="skill-row editor-skill-row" data-tooltip="{{Tooltip}}" data-tooltip-direction="RIGHT">
+                <label class="skill-label">{{{Name}}}</label>
+                {{#if Editable}}
+                <div class="passion-container passion-container-editor" data-skill-def="{{@key}}" data-action="editPassion" data-tooltip="Passion: {{Passion}}<br>Click to increment" data-tooltip-direction="RIGHT">
+                    {{#ifEquals Passion "None" }}
+                    <i class="passion-icon fa-thin fas fa-fire-flame"></i>
+                    {{/ifEquals}}
+                    {{#ifEquals Passion "Minor"}}
+                    <i class="passion-icon fa-fw fas fa-fire-flame"></i>
+                    {{/ifEquals}}
+                    {{#ifEquals Passion "Major"}}
+                    <i class="passion-icon fa-fw fas fa-fire-flame"></i>
+                    <i class="passion-icon passion-icon-major fa-fw fas fa-fire-flame"></i>
+                    {{/ifEquals}}
+                </div>
+                <div class="skill-background-outer" style="width=100%">
+                    <input type="number" maxLength="2" minlength="1" value="{{Val}}" data-skill-def="{{@key}}" data-tooltip="Min value: {{Min}}" data-tooltip-direction="RIGHT" class="skill-value-editor"></input>
+                </div>
+                {{/if}}
+                {{#unless Editable}}
+                <div class="passion-container" data-tooltip="Passion: {{Passion}}" data-tooltip-direction="RIGHT">
+                    {{#ifEquals Passion "None" }}
+                    <i class="passion-icon fa-thin fas fa-fire-flame"></i>
+                    {{/ifEquals}}
+                    {{#ifEquals Passion "Minor"}}
+                    <i class="passion-icon fa-fw fas fa-fire-flame"></i>
+                    {{/ifEquals}}
+                    {{#ifEquals Passion "Major"}}
+                    <i class="passion-icon fa-fw fas fa-fire-flame"></i>
+                    <i class="passion-icon passion-icon-major fa-fw fas fa-fire-flame"></i>
+                    {{/ifEquals}}
+                </div>
+                <div class="skill-background-outer" style="width=100%">
+                    <div class="skill-background" style="width:0%">
+                        <label class="skill-value">-</label>
+                    </div>
+                </div>
+                {{/unless}}
+            </div>
+            {{/each}}
+            {{/if}}
+        </div>
+    </div>
+</div>

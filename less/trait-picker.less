@@ -1,0 +1,49 @@
+#trait-picker{
+    
+    .container{
+        display: flex;
+        flex-direction: column;
+        height: 100% !important;
+    }
+    .upper-area{
+        
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        height: 95% !important;
+        flex-shrink: 1;
+        .left-area{
+            display: flex;
+            flex-direction: column;
+            margin: 8px;
+            .trait-list{
+                overflow-x: hidden;
+                overflow-y: scroll;
+                .trait-item{
+                    background-color: transparent;
+                    .trait-item{
+                        display: flex;
+                        align-items: center;
+                    }
+                }
+                .trait-item:hover{
+                    background-color: #868686;
+                }
+            }
+        }
+        .right-area{
+            margin: 8px;
+            display: flex;
+            flex-direction: column;
+            width: 50%;
+            height: 95% !important;
+            overflow-x: hidden;
+            overflow-y: scroll;
+            .title{
+                margin-top:8px;
+                
+                color: rgb(230, 230, 76);
+            }
+        }
+    }
+}

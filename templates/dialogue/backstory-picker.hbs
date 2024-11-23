@@ -1,0 +1,49 @@
+<div class="container">
+    <div class="upper-area">
+        <div class="left-area">
+            <label class="left-row-item"><input placeholder="Search" type="text" name="backstroy_filter_field"></label>
+            <section class="backstory-list">
+                <table id="list-table">
+                    <tbody>
+                        {{#each backstories}}
+                        <tr class="backstory-item" data-action="selectBackstory" data-def="{{@key}}">
+                            <td>
+                                <input disabled type="checkbox" {{checked checked}} ></input>
+                                <label class="backstory-label" data-tooltip="{{Desc}}" data-tooltip-direction="RIGHT">{{Name}}</label>
+                            </td>
+                        </tr>                
+                        {{/each}}
+
+                    </tbody>
+                </table>
+            </section>
+        </div>
+        <div class="right-area">
+                <label class="title" style="font-weight:bold;">{{selected.Name}}<br></label>
+            <label>{{{selected.Desc}}}</label>
+
+            <label class="title" style="font-weight: bold;"><br>Additional Effects</label>
+            <label class="backstory-info-element title">Required work</label>
+            <label class="backstory-info-element">{{{selected.ReqWork}}}</label>
+            <label class="backstory-info-element title">Disables work</label>
+            <label class="backstory-info-element">{{{selected.WorkDis}}}</label>
+
+            {{#if selected.disallowedTraitData}}
+                <label class="backstory-info-element title">Disallowed traits</label>
+                {{#each selected.disallowedTraitData}}
+                    <label class="backstory-info-element" data-tooltip="{{Desc}}" data-tooltip-direction="RIGHT">{{Name}}</label>
+                {{/each}}
+            {{/if}}
+            {{#if selected.forcedTraitData}}
+                <label class="backstory-info-element title">Forced traits</label>
+                {{#each selected.forcedTraitData}}
+                    <label class="backstory-info-element" data-tooltip="{{Desc}}" data-tooltip-direction="RIGHT">{{Name}}</label>
+                {{/each}}
+            {{/if}}
+
+        </div>
+    </div>
+    <div class="lower-area">
+        <button type="submit" data-action="submit">Apply</button>
+    </div>
+</div>

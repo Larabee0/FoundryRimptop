@@ -1,0 +1,109 @@
+<section class="tab standard-form pawn-actor-tab pawn-actor-health-card {{tabs.healthCard.cssClass}}" data-tab="healthCard" data-group="{{tabs.healthCard.group}}">
+    <div class="health-card-container">
+        <div class="upper-area">
+            <i class="data-refresh-icon health-refresh-icon fa-fw fas fa-arrows-rotate" data-action="refreshHealth" data-tooltip="Refresh all health data from RimWorld app"  data-tooltip-direction="LEFT"></i>
+            <label class="health-card-title">Health</label>
+        </div>
+        <div class="main-area">
+            <div class="health-summary-container">
+                {{#with system.healthSummary}}
+                    <div class="summary-tabs-container">
+                        <label data-action="toggleOperationsTab" class="summary-tab {{summaryActive}}" >Overview</label>
+                        <label data-action="toggleOperationsTab" class="summary-tab {{operationsActive}}">Operations ({{OperationCount}})</label>
+                    </div>
+                    {{#if summaryActive}}
+                        <label data-tooltip="{{Tooltip}}"  data-tooltip-direction="LEFT">{{PawnInfo}}</label>
+                        <label>Health state: <b>{{HealthState}}</b></label>
+                        <div class="self-tend-container">
+                            <label>Self-tend</label>
+                            <input type="checkbox" data-action="toggleSelfTend" {{checked SelfTend}}></input>
+                        </div>
+                        
+                        {{#each Entries}}
+                        <div class="health-summary-item" data-tooltip="{{Tooltip}}"  data-tooltip-direction="LEFT">
+                            <label class="health-summary-label left-label" style="color:#{{LeftColor}}">{{Left}}</label>
+                            <label class="health-summary-label right-label" style="color:#{{RightColor}}">{{Right}}</label>
+                        </div>
+                        {{/each}}
+                    {{/if}}
+                    {{#if operationsActive}}
+                        {{#with ../system.operationBills}}
+                            <button class="add-bill-button">Add bill</button>
+                            <section class="table-container">
+                                <table class="table table-striped">
+                                    <tbody style="display:flex; flex-direction:column">
+                                    {{#each Bills}}
+                                        <tr style="display:flex; flex-direction:column">
+                                            <td style="display:flex; flex-direction:column">
+                                                {{>"systems/rimtop/templates/partials/bill-partial.hbs"}}
+                                            </td>
+                                        </tr>
+                                    {{/each}}
+                                    </tbody>
+                                </table>
+                            </section>
+                        {{/with}}
+                    {{/if}}
+                {{/with}}
+            </div>
+            <div class="hediff-list-container">
+                {{#with system.hediffList}}
+                
+                <div style="display: flex; flex-direction: row; height:27px;
+                        align-items: center; margin:8px;">
+                    <label class="switch" data-tooltip="Edit health modifiers"  data-tooltip-direction="RIGHT">
+                        <input type="checkbox" data-action="editHediffsToggle" {{checked editHediffs}}>
+                        <span class="slider"></span>
+                    </label>
+                    {{#if editHediffs}}
+                        <label style="font-weight: bold; margin-left: 8px; margin-right:8px;">EDIT MODE</label>
+                        {{#if ../isGM}}
+                        <button data-action="addHediff" style="width:125px;">Add modifier</button>
+                        {{/if}}
+                        <button data-action="addDamage" style="width:125px;">Add damage</button>
+                        {{#if ../isGM}}
+                        {{#ifEquals ../system.statCard.PawnState 0}}
+                        <i class="data-refresh-icon health-refresh-icon fa-fw fas fa-tombstone-blank" data-action="resurrectPawn" data-tooltip="Resurrect Pawn"  data-tooltip-direction="RIGHT"></i>
+                        
+                        {{/ifEquals}}
+                        {{/if}}
+                    {{/if}}
+                </div>
+                <section class="hediff-list">
+                    <table id="hediff-list-table" class="table table-striped hediff-list-table">
+                        <tbody class="hediff-list-body">
+                            {{#each PartsWithHediffs}}
+                            <tr class="item-row hediff-list-row" data-tooltip="{{Tooltip}}"  data-tooltip-direction="LEFT">
+                                <td class="hediff-list-item">
+                                    <label class="hediff-list-label left-label" style="color:#{{PartColor}}">{{Part}}</label>
+                                    <div class="hediff-parts">
+                                        {{#each Hediffs}}
+                                            <div class="hediff-item">
+                                                <label class="hediff-list-label right-label" style="color:#{{HediffColor}}" data-tooltip="{{Tooltip}}"  data-tooltip-direction="RIGHT">{{Hediff}}</label>
+                                                {{#if Bleeding}}
+                                                <i style="margin:0px; color:red" class="bleed-icon fa-fw fas fa-droplet"></i>
+                                                {{/if}}
+                                                
+                                                {{#if ../../this.editHediffs}}
+                                                    <i data-hediff-id="{{HediffId}}" style="margin:0px;" class="hediff-info hediff-remove-icon fa-fw fas fa-square-info" data-tooltip="Info" data-tooltip-direction="RIGHT"></i>
+                                                    <i data-hediff-id="{{HediffId}}" data-severity="{{Severity}}" style="margin:0px;" class="hediff-heal hediff-remove-icon fa-fw fas fa-bandage" data-tooltip="Heal" data-tooltip-direction="RIGHT"></i>
+                                                    <i data-hediff-id="{{HediffId}}" data-severity="{{Severity}}" style="margin:0px;" class="hediff-harm hediff-remove-icon fa-fw fas fa-knife-kitchen" data-tooltip="Increase severity" data-tooltip-direction="RIGHT"></i>
+                                                    <i data-hediff-id="{{HediffId}}" class="hediff-remove hediff-remove-icon fa-fw fas fa-xmark" data-tooltip="Remove" data-tooltip-direction="RIGHT"></i>
+                                                {{else}}
+                                                    <i data-hediff-id="{{HediffId}}" class="hediff-info hediff-remove-icon fa-fw fas fa-square-info" data-tooltip="Info" data-tooltip-direction="RIGHT"></i>
+                                                {{/if}}
+                                            </div>
+                                        {{/each}}
+                                    </div>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </section>
+                <label style="margin-left:24px; margin-bottom:16px">{{BleedRate}}</label>
+                {{/with}}
+            </div>
+        </div>
+    </div>
+</section>

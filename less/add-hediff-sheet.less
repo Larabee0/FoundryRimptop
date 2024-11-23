@@ -1,0 +1,31 @@
+#add-hediff-sheet{
+    .container{
+        display: flex;
+        flex-direction: column;
+        height: 100% !important;
+    }
+    .hediff-list{
+        display: flex;
+        flex-direction: column;
+        height: 100% !important;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        .hediff-category-container{
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+        .hediff-item{
+            padding: 4px;
+        }
+        .hediff-category{
+            font-weight: bold;
+        }
+        .hediff-label{
+            margin-left: 16px;
+        }
+        .hediff-item:hover{
+            background-color: #868686;
+        }
+    }
+}

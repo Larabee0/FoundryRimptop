@@ -1,0 +1,173 @@
+.pawn-actor-tab{
+    display: flex;
+    flex-direction: column;
+}
+
+.health-card-container{
+    display: flex;
+    flex-direction: column;
+    height: 100% !important;
+    width: 100%;
+    .upper-area{        
+        display: flex;
+        flex-direction: row;
+        //justify-content: space-between;
+        margin-bottom: 16px;
+        margin-left: 16px;
+        margin-right: 16px;
+        .health-refresh-icon{
+            margin-right: 16px;
+        }
+        .health-card-title{
+            font-size: larger;
+            font-weight: bold;
+        }
+    }
+    .main-area{
+        display: flex;
+        flex-direction: row;
+        width:100%;
+        height: calc(100% - 37px);
+        .health-summary-container{
+            display: flex;
+            flex-direction: column;
+            width: 35%;
+            height: 100%;
+            .health-summary-item{
+                display: flex;
+                flex-direction: row;
+                margin: 4px;
+                width: 100%;
+                .health-summary-label{
+                    width:70%;
+                }
+                .right-label{
+                    text-align: end;
+                    width:30%;
+                }
+            }
+            .summary-tabs-container{
+                display: flex;
+                flex-direction: row;
+                margin-bottom: 8px;
+                .summary-tab{
+                    width: 50%;
+                    text-align: center;
+                    padding: 4px;
+                    border: 0px;
+                    
+                }
+                .summary-tab:hover{
+                    background-color: #868686;
+                }
+                .summary-tab-active{
+                    font-weight: bold;
+                    border: 1px solid var(--color-border-light-primary);
+                    border-radius: 8px;
+                }
+            }
+            .self-tend-container{
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                margin-top: 8px;
+                margin-bottom: 8px;
+            }
+            .table-container{
+                display: flex;
+                flex-direction: column;
+                height: calc(100% - 65px);
+                .table{
+                    display: flex;
+                    flex-direction: column;
+                    flex-grow: 1;
+                    overflow-x: hidden;
+                    overflow-y: scroll;
+                }
+            }
+        }
+        .hediff-list-container{
+            display: flex;
+            flex-direction: column;
+            height: 100% !important;
+            width: 65%;
+            .hediff-list{
+                display: flex;
+                flex-direction: column;
+                margin: 4px;
+                height:calc(100% - 76px) !important;
+                .hediff-list-table{
+                    display: flex;
+                    flex-direction: column;
+                    flex-grow: 1;
+                    border: 0px;
+                    margin-bottom: 0px;
+                    .hediff-list-body{
+                        display: flex;
+                        flex-direction: column;
+                        flex-grow: 1;
+                        overflow-x: hidden;
+                        overflow-y: scroll;
+                        .hediff-list-row{
+                            display: flex;
+                            flex-direction: column;
+                        }
+                    }
+                }
+            }
+            .hediff-list-item{
+                display: flex;
+                flex-direction: row;
+                padding: 0px;
+                .hediff-list-label{
+                    width: 98%;
+                    padding-top: 8px;
+                    padding-bottom: 8px;
+                }
+                
+                .left-label{
+                    width: 30%;
+                }
+                .hediff-list-label:hover{
+                    background-color: #868686;
+                }
+                .left-label{
+                    padding-left: 8px;
+                }
+                .right-label{
+                    margin-right: 4px;
+                }
+                .hediff-parts{
+                    display: flex;
+                    flex-direction: column;
+                    width: 66%;
+                    .hediff-item{
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+                        .hediff-tending{
+                            margin-right: 4px;
+                        }
+                        .hediff-remove-icon{
+                            width: fit-content;
+                            padding: 4px;
+                            padding-top: 8px;
+                            padding-bottom: 8px;
+                            margin-right: 8px;
+                        }
+                        .bleed-icon{
+                            width: fit-content;
+                            padding: 4px;
+                            padding-top: 8px;
+                            padding-bottom: 8px;
+                            margin-right: 8px;
+                        }
+                        .hediff-remove-icon:hover{
+                            text-shadow: 0 0 10px var(--color-shadow-primary);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,32 @@
+<section class="tab standard-form pawn-actor-tab pawn-actor-needs-card {{tabs.needsCard.cssClass}}" data-tab="needsCard" data-group="{{tabs.needsCard.group}}">
+    <div class="needs-card-container">
+        <div class="upper-area">
+            <i class="data-refresh-icon needs-refresh-icon fa-fw fas fa-arrows-rotate" data-action="refreshNeeds" data-tooltip="Refresh all needs data from RimWorld app"  data-tooltip-direction="LEFT"></i>
+            <label class="needs-card-title">Needs</label>
+            <button class="add-thought-button">Add a thought</button>
+        </div>
+        {{#with system.needsCard}}
+        <div class="main-area">
+            <div class="need-bars-container">
+                {{#each Needs}}
+                {{>"systems/rimtop/templates/partials/needs-bar-partial.hbs" this}}
+                {{/each}}
+            </div>
+            <div class="mood-container">
+                <div class="mood-bar-container">
+                    {{>"systems/rimtop/templates/partials/needs-bar-partial.hbs" Mood}}
+                </div>
+                <div class="thoughts-container">
+
+                    {{#each Thoughts.Thoughts}}
+                    <div class="thought" data-tooltip="{{Tooltip}}"  data-tooltip-direction="RIGHT">
+                    <label class="thought-label">{{Thought}}</label>
+                    <label  class="thought-label" style="color:#{{ValueColor}}">{{Value}}</label>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+        {{/with}}
+    </div>
+</section>

@@ -1,0 +1,66 @@
+.needs-card-container{
+    display: flex;
+    flex-direction: column;
+    height: 100% !important;
+    width: 100%;
+    .upper-area{        
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 16px;
+        margin-left: 16px;
+        margin-right: 16px;
+        align-items: center;
+        .needs-refresh-icon{
+            margin-right: 16px;
+        }
+        .needs-card-title{
+            font-size: larger;
+            font-weight: bold;
+        }
+        .add-thought-button{
+            width:fit-content;
+            margin-left: 16px;
+        }
+    }
+    .main-area{
+        display: flex;
+        flex-direction: row;
+        width:100%;
+        height: calc(100% - 37px);
+        .need-bars-container{
+            display: flex;
+            flex-direction: column;
+            height: 100% !important;
+            width: 35%;
+            padding: 8px;
+        }
+        .mood-container{
+            display: flex;
+            flex-direction: column;
+            height: 100% !important;
+            width: 65%;
+            padding: 8px;
+            .mood-bar-container{
+                display: flex;
+                flex-direction: column;
+            }
+            .thoughts-container{
+                display: flex;
+                flex-direction: column;
+                .thought{
+                    display: flex;
+                    flex-direction: row;
+                    width: 100%;
+                    justify-content: space-between;
+                    padding: 4px;
+                    .thought-label{
+                        margin:8px;
+                    }
+                }
+                .thought:hover{
+                    background-color: #868686;
+                }
+            }
+        }
+    }
+}

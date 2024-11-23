@@ -1,0 +1,13 @@
+<section class="tab standard-form base-actor-stat-card {{tabs.statCard.cssClass}}" data-tab="statCard" data-group="{{tabs.statCard.group}}">
+    
+    {{#if thingExists includeZero=true}}
+        {{#unless thingExists}}
+            <button type="button" data-action="create-thing">Open Make Thing Menu</button>
+        {{/unless}}
+    {{/if}}
+    {{#if system.statCard}}
+    {{>"systems/rimtop/templates/partials/stat-card-partial.hbs" system.statCard}}
+    {{/if}}
+
+    
+</section>

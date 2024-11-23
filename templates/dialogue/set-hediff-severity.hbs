@@ -1,0 +1,12 @@
+<div class="container">
+    <label>Current severity: {{currentSeverity}}</label>
+    {{#if healMode}}
+    <label>Max healing: {{currentSeverity}}</label>
+    <label>Set amount to heal</label>
+    {{/if}}
+    {{#unless healMode}}
+    <label>Set amount to add to severity</label>
+    {{/unless}}
+    <input id="serverity-input" type="number"></input>
+    <button data-action="submit" type="submit">Confirm</button>
+</div>

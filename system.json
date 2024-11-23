@@ -1,0 +1,35 @@
+{
+    "name":"rimtop",
+    "title":"Rim-Top",
+    "description":"A system for testing the limits of interactio with an external but interally ran .NET C# Application.",
+    "version": 0.01,
+    "compatibility": {
+        "minimum": "12",
+        "verified": "12"
+    },
+    "socket": true,
+    "esmodules": [
+        "rimtop.js"
+    ],
+    "languages": [
+        {
+          "lang": "en",
+          "name": "English",
+          "path": "lang/en.json",
+          "flags": {}
+        }
+    ],
+    "styles":[
+        "rimtop.css"
+    ],
+    "media": [
+        {
+            "type": "setup",
+            "url": "systems/rimtop/assets/thumbnail.png",
+            "thumbnail": "systems/rimtop/assets/thumbnail.png"
+        }
+    ],
+    "primaryTokenAttribute": "health",
+    "secondaryTokenAttribute": "instantInitative",
+    "background": "systems/rimtop/assets/BGPlanet-resources.assets-889.png"
+}

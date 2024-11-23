@@ -1,0 +1,85 @@
+#pawn-creator{
+    .container{
+        display: flex;
+        flex-direction: row;
+        height: 100% !important;
+    }
+    .lower-area{
+        display: flex;
+        flex-direction: row;
+        width:100%;
+        .left-area{
+            display: flex;
+            flex-direction: column;
+            height: 100% !important;
+            width:33%;
+            .kinds-label{
+                margin-left: 16px;
+                font-size: large;
+            }
+            .left-row-item{
+                margin: 5px;
+                align-self: center;
+                text-align: center;
+            }
+            .pawn-kinds-list{
+                //max-height: 300px;
+                overflow-x: hidden;
+                overflow-y: scroll;
+                .item-container{
+                    padding: 0;
+                }
+                .item-row:hover{
+                    background-color: #868686;
+                }
+                .item-action{
+                    display:flex;
+                    width: 100%;
+                    height: 100%;
+                    border-top: 8px solid transparent;
+                    border-bottom: 8px solid transparent;
+                    border-left: 16px solid transparent;
+                    border-right: 16px solid transparent;
+                }
+            }
+        }
+
+        .middle-area{
+            display: flex;
+            flex-direction: column;
+            width:34%;
+            padding-left: 16px;
+            padding-right: 16px;
+            .description-title-label{
+                padding-bottom: 16px;
+                font-size: large;
+            }
+        }
+        .right-area{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            width:34%;
+            .right-row-item{
+                margin: 2px;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                width:100%;
+                padding-left: 16px;
+                padding-right: 16px;
+                text-align: right;
+            }
+            .name-input{
+                text-align: left;
+                max-width: 50%;
+            }
+            .number-input-with-checkbox{
+                text-align: left;
+                max-width: 55px;
+            }
+        }
+        
+    }
+}

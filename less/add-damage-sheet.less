@@ -1,0 +1,47 @@
+#add-damage{
+    .container{
+        display: flex;
+        flex-direction: column;
+        height: 100% !important;
+        .horizontal-container{
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            height: calc(100% - 60px) !important;
+            width: 100%;
+            padding: 8px;
+        }
+    }
+    .left{
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        .damage-def-list{
+            display: flex;
+            flex-direction: column;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            .damage-def-item{
+                padding: 4px;
+            }
+            .damage-def-item:hover{
+                background-color: #868686;
+            }
+            .part-item{
+                padding: 4px;
+            }
+            .part-item:hover{
+                background-color: #868686;
+            }
+        }
+    }
+    .right{
+        display: flex;
+        flex-direction: column;
+        margin: 8px;
+        flex-grow: 1;
+        .def-info-label{
+            padding: 4px;
+        }
+    }
+}

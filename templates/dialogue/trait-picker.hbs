@@ -1,0 +1,77 @@
+<div class="container">
+    <div class="upper-area">
+        <div class="left-area">
+            <label class="left-row-item"><input placeholder="Search" type="text" id="filter_field" name="filter_field"></label>
+            <section class="trait-list">
+                <table id="list-table">
+                    <tbody>
+                        {{#each traits as |trait TraitDefName|}}
+                            {{#each trait.DegreeDatas}}
+                                {{#unless ../this.hide}}
+                                {{#unless ../this.disallowed}}
+                                    <tr class="trait-item" data-action="selectTrait" data-def="{{TraitDefName}}" data-degree="{{@key}}">
+                                        <td class="trait-item" >
+                                            <label class="trait-label" data-tooltip="{{Desc}}" data-tooltip-direction="RIGHT">{{Name}}</label>
+                                        </td>
+                                    </tr>
+                                {{/unless}}
+                                {{#if ../this.disallowed}}
+                                    <tr class="trait-item" disabled>
+                                        <td class="trait-item">
+                                            <label class="trait-label trait-disallowed" data-tooltip="<b>This trait cannot be added as it conflicts with an existing trait or skill passion.</b><br><br>{{Desc}}" data-tooltip-direction="RIGHT">{{Name}}</label>
+                                        </td>
+                                    </tr>
+                                {{/if}}
+                                {{/unless}}
+                            {{/each}}
+                        {{/each}}
+
+                    </tbody>
+                </table>
+            </section>
+        </div>
+        <div class="right-area">
+            {{#with (lookup this.traits this.selectedTrait)}}
+                <label class="title" style="font-weight:bold;">{{lookup (lookup (lookup this "DegreeDatas") ../selectedDegree) "Name"}}<br></label>
+                <label>{{{lookup (lookup (lookup this "DegreeDatas") ../selectedDegree) "Desc"}}}</label>
+                
+                <label class="backstory-info-element title">Required work</label>
+                <label class="backstory-info-element">{{{ReqWorkTags}}}</label>
+                <label class="backstory-info-element title">Disables work</label>
+                <label class="backstory-info-element">{{{DisWorkTags}}}</label>
+                {{#if Con}}
+                    <label class="backstory-info-element title">Conflicting traits</label>
+                    {{#each Con}}
+                        {{#with (lookup ../../traits this)}}
+                            {{#each this.DegreeDatas}}
+                                <label class="trait-label" data-tooltip="{{Desc}}" data-tooltip-direction="RIGHT">- {{Name}}</label>
+                            {{/each}}
+                        {{/with}}
+                    {{/each}}
+                {{/if}}
+                
+                {{#if ConSkillPass}}
+                    <label class="backstory-info-element title">Conflicting passions</label>
+                    {{#each ConSkillPass}}
+                        <label class="trait-label" data-tooltip="This trait cannot be combined with positive passion in {{this}}" data-tooltip-direction="RIGHT">- {{this}}</label>
+                    {{/each}}
+                {{/if}}
+                {{#if FSkillPass}}
+                    <label class="backstory-info-element title">Forced passions</label>
+                    {{#each FSkillPass}}
+                        <label class="trait-label" data-tooltip="Grants at least a minor passion in {{this}}" data-tooltip-direction="RIGHT">- {{this}}</label>
+                    {{/each}}
+                
+                {{/if}}
+            {{/with}}
+        </div>
+    </div>
+    <div class="lower-area">
+        {{#if this.selectedTrait}}
+        <button type="submit" data-action="submit">Add</button>
+        {{/if}}
+        {{#unless this.selectedTrait}}
+        <button type="submit" disabled>Add</button>
+        {{/unless}}
+    </div>
+</div>

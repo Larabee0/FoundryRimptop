@@ -1,0 +1,105 @@
+
+{{#with configData}}
+<div class="bill-config-form">
+    <div class="main-container display-vertical">
+        <label class="bill-title">{{MainLabel}}</label>
+        <div class="body display-horizontal">
+            <div class="left-column display-vertical">
+                <i data-recipe-def="{{MakeThingHyperlink}}" data-action="showThingInfo" class="recipe-info-icon info-icon fa-fw fas fa-square-info" data-tooltip="View product information."  data-tooltip-direction="RIGHT"></i>
+                <button class="suspend-button" data-action="suspend">{{SuspendedString}}</button>
+                <label class="description-area">{{{Description}}}</label>
+            </div>
+            <div class="middle-column display-vertical">
+                <select class="repeat-mode-dropdown" name="repeat-mode">
+                    {{selectOptions repeatModes selected=curMode}}
+                </select>
+                {{#ifFourOr curMode 0 curMode 1}}
+                <div class="do-until-container display-vertical">
+                    {{#ifEquals curMode 0}}
+                    <label class="count-adjust-label" id="">Repeat:</label>
+                    {{else}}
+                    <label class="count-adjust-label" id="">Currently have: {{RepeatCurrentCount}} / {{RepeatTargetCount}}</label>
+                    {{/ifEquals}}
+                    <div class="display-horizontal">
+                        <button class="count-adjust-button">-{{countLabels.big}}</button>
+                        <button class="count-adjust-button">-{{countLabels.small}}</button>
+                        <input class="count-input-box" type="number" value="{{RepeatTargetCount}}"></input>
+                        <button class="count-adjust-button">{{countLabels.small}}</button>
+                        <button class="count-adjust-button">{{countLabels.big}}</button>
+                    </div>
+                </div>
+                {{#ifEquals curMode 1}}
+                {{#if UseCountEquipped}}
+                <label class="option-toggle">Count equipped<input type="checkbox" data-action="countEquip" {{checked CountEquipped}}></input></label>
+                {{/if}}
+                {{#if UseCountTainted}}
+                <label class="option-toggle">Count tainted<input type="checkbox" data-action="countTaint" {{checked CountTainted}}></input></label>
+                {{/if}}
+                
+                {{#ifNotEqual MaxHp -1}}
+                {{#ifNotEqual MaxHp -1}}
+                <div class="bill-double-slider display-vertical" id="product-hp-container">
+                    <label class="double-slider-label" id="product-hp-label">Any quality</label>
+                    {{>"systems/rimtop/templates/partials/double-slider-partial.hbs" lowerValue=MinHp upperValue=MaxHp min="0" max="1" step="0.001"}}
+                </div>
+                {{/ifNotEqual}}
+                {{/ifNotEqual}}
+
+                {{#ifNotEqual QualityMin -1}}
+                {{#ifNotEqual QualityMax -1}}
+                <div class="bill-double-slider display-vertical" id="product-quality-container">
+                    <label class="double-slider-label" id="product-quality-label">Any quality</label>
+                    {{>"systems/rimtop/templates/partials/double-slider-partial.hbs" lowerValue=QualityMin upperValue=QualityMax min="0" max="6" step="1"}}
+                </div>
+                {{/ifNotEqual}}
+                {{/ifNotEqual}}
+
+                {{#if UseOnlyAllowedIngredients}}
+                <label class="option-toggle">Only allowed ingredients<input type="checkbox" data-action="onlyAllowIngredients" {{checked OnlyAllowedIngredients}}></input></label>
+                {{/if}}
+                <label class="option-toggle">Pause when statisfied<input type="checkbox" data-action="pauseWhenStatisfied" {{checked PauseWhenStatisified}}></input></label>
+                {{#if PauseWhenStatisified}}
+                <div class="pause-when-statisfied-target display-vertical">
+                    <label class="count-adjust-label">Unpause at: {{UnpauseAmount}}</label>
+                    <div class="display-horizontal">
+                        <button class="count-adjust-button" data-pause="true">-{{countLabels.big}}</button>
+                        <button class="count-adjust-button" data-pause="true">-{{countLabels.small}}</button>
+                        <input class="count-input-box" type="number" value="{{UnpauseAmount}}"></input>
+                        <button class="count-adjust-button" data-pause="true">{{countLabels.small}}</button>
+                        <button class="count-adjust-button" data-pause="true">{{countLabels.big}}</button>
+                    </div>
+                </div>
+                {{/if}}
+                {{/ifEquals}}
+                {{/ifFourOr}}
+                
+            </div>
+            <div class="right-column display-vertical">
+                <div class="clear-allow-container display-horizontal">
+                    <button data-action="clearAll">Clear all</button>
+                    <button data-action="allowAll">Allow all</button>
+                </div>
+                <label class="search-label"><input placeholder="Search" type="text" id="filter_field" name="filter_field"></label>
+                {{#ifNotEqual IngredientsConfig.MinHp -1}}
+                <div class="bill-double-slider display-vertical" id="ingredient-hp-container">
+                    <label class="double-slider-label" id="ingredient-hp-label">Any quality</label>
+                    {{>"systems/rimtop/templates/partials/double-slider-partial.hbs" lowerValue=IngredientsConfig.MinHp upperValue=IngredientsConfig.MaxHp min="0" max="1" step="0.001"}}
+                </div>
+                {{/ifNotEqual}}
+                {{#ifNotEqual IngredientsConfig.QualityMin -1}}
+                <div class="bill-double-slider display-vertical" id="ingredient-quality-container">
+                    <label class="double-slider-label" id="ingredient-quality-label">Any quality</label>
+                    {{>"systems/rimtop/templates/partials/double-slider-partial.hbs" lowerValue=IngredientsConfig.QualityMin upperValue=IngredientsConfig.QualityMax min="0" max="6" step="1"}}
+                </div>
+                {{/ifNotEqual}}
+                <div class="ingredients-list display-vertical" id="ingredients-list">
+                    {{#each IngredientsConfig.IngredientsFilter.SpecialFilterJsons}}
+                    {{>"systems/rimtop/templates/partials/bill-ingredient-item-partial.hbs" this}}
+                    {{/each}}
+                    {{>"systems/rimtop/templates/partials/bill-ingredient-item-partial.hbs" IngredientsConfig.IngredientsFilter.CategoryJson}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{/with}}

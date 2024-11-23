@@ -1,0 +1,122 @@
+.combat-card-container{
+    display: flex;
+    flex-direction: column;
+    height: calc(100%);
+    .upper-area{
+        display: flex;
+        flex-direction: row;
+        .combat-refresh-icon{
+            margin-right: 16px;
+        }
+        .combat-card-title{
+            width: fit-content;
+            font-size: larger;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .melee-attack-options{
+            width: fit-content;
+        }
+    }
+    .lower-area{
+        display: flex;
+        flex-direction: row;
+        height: calc(100% - 25px);
+        .gear-thing-action-icon:hover{
+            text-shadow: 0 0 10px var(--color-shadow-primary);
+        }
+        .gear-thing-action-icon:disabled{
+            color: #868686;
+        }
+        .left-area{
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 4px);
+            overflow-y: scroll;
+            overflow-x: hidden;
+            margin:2px;
+            padding: 2px;
+            .vertical-container{
+                display: flex;
+                flex-direction: column;
+                border: 1px solid var(--color-border-light-primary);
+                padding: 2px;
+                margin: 2px;
+            }
+            .category-title{
+                font-weight: bold;
+            }
+        }
+        .right-area{
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 4px);
+            margin:4px;
+            width: 50%;
+            .custom-tick-input{
+                width:46px;
+                height: 20px;
+            }
+            .vertical-container{
+                display: flex;
+                flex-direction: column;
+                max-height:55%;
+                border: 1px solid var(--color-border-light-primary);
+                padding: 2px;
+                margin: 2px;
+                .info-label{
+                    padding: 2px;
+                }
+                .info-label:hover   {
+                    background-color: #868686;
+                }
+            }
+            .action-log{
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+                overflow-y: scroll;
+                overflow-x: hidden;
+                padding: 2px;
+                margin: 2px;
+                .horizontal-container{                    
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                }
+                .horizontal-container:hover{
+                    background-color: #868686;
+                }
+            }
+        }
+    }
+}
+
+.verb-container{
+    display: flex;
+    flex-direction: column;
+    margin: 4px;
+    padding: 4px;
+    //border: 1px solid var(--color-border-light-primary);
+
+    .info-row{
+        display: flex;
+        flex-direction: column;
+        .weapon-info{
+            display: flex;
+            flex-direction: row;
+            .column{
+                display: flex;
+                flex-direction: column;
+            }
+            .column:hover{
+                background-color: #868686;
+            }
+            .verb-info{
+                margin: 1px;
+                padding: 2px;
+                background-color: rgba(128, 128, 128, 0.395);
+            }
+        }
+    }
+}

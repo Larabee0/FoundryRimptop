@@ -1,0 +1,25 @@
+{
+    "Actor":{
+        "types":["thing","pawn"],
+        "templates":{
+            "thing":{
+                "thingDef":"",
+                "thingID":"",
+                "lastSpawnedToken":"",
+                "spawned" : false,
+                "statCard":[]
+            },
+            "pawn":{
+                "templates": ["thing"],
+                "bio":[],
+                "healthSummary":[],
+                "hediffList":[],
+                "needsCard":[],
+                "gearCard":[],
+                "logCard":[],
+                "downTimeCard":[]
+            }
+
+        }
+    }
+}

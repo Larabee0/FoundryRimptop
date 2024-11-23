@@ -1,0 +1,12 @@
+
+{{>"systems/rimtop/templates/partials/search-partial.hbs" thingDefs}}
+<input type="text" id="filter_field" name="filter_field" placeholder="{{search_text}}">
+<table id="list_table" class="table table-striped">
+<tbody>
+  {{#each this}}
+  <tr class="item-row">
+    <td>{{this.DisplayName}}</td>
+  </tr>
+  {{/each}}
+</tbody>
+</table>

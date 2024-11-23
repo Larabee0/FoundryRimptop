@@ -1,0 +1,82 @@
+<section class="tab standard-form pawn-actor-tab pawn-actor-health-card {{tabs.gearCard.cssClass}}" data-tab="gearCard" data-group="{{tabs.gearCard.group}}">
+{{#if system.gearCard}}
+{{#with system.gearCard}}
+    <div class="gear-card-container">
+        <div class="upper-area">
+            <div style="display:flex; flex-direction: row; justify-content:center; align-items:center">
+                <i class="data-refresh-icon gear-refresh-icon fa-fw fas fa-arrows-rotate" data-action="refreshGear" data-tooltip="Refresh gear data from RimWorld app"  data-tooltip-direction="LEFT"></i>
+                <label class="gear-card-title">Apparel Equipment & Inventory</label>
+                <label class="mass-carried">{{{MassCarried}}}</label>
+                <button data-action="createNewThing" style="margin-left:8px; width:fit-content;">Create new thing</button>
+            </div>
+        </div>
+        <dev class="lower-area">
+            <div class="left-area">
+                <div class="gear-container-area equippment-container">
+                    <label class="gear-title">Equipment</label>
+                    <section class="gear-list equippment-list">
+                        {{#unless Equipment}}
+                        <label style="text-align:center; color:gray;">None</label>
+                        {{/unless}}
+                        {{#each Equipment}}
+                            {{> "systems/rimtop/templates/partials/gear-thing-partial.hbs" this}}
+                        {{/each}}
+                    </section>
+                </div>
+                <div class="gear-container-area apparel-container">
+                    <label class="gear-title">Apparel</label>
+                    <label class="comfy-temp">{{{ComfyTemp}}}</label>
+                    <div class="overall-armor-container">
+                        <label style="color: gray;">{{OverallArmorText}}</label>
+                        <div class="overall-armor-label-container">
+                            <label class="overall-armor-label">Sharp</label>
+                            <label class="overall-armor-label">{{ArmorSharp}}</label>
+                        </div>
+                        <div class="overall-armor-label-container">
+                            <label class="overall-armor-label">Blunt</label>
+                            <label class="overall-armor-label">{{ArmorBlunt}}</label>
+                        </div>
+                        <div class="overall-armor-label-container">
+                            <label class="overall-armor-label">Heat</label>
+                            <label class="overall-armor-label">{{ArmorHeat}}</label>
+                        </div>
+                    </div>
+                    <section class="gear-list apparel-list">
+                        {{#unless Apparel}}
+                        <label style="text-align:center; color:gray;">None</label>
+                        {{/unless}}
+                        {{#each Apparel}}
+                            {{> "systems/rimtop/templates/partials/gear-thing-partial.hbs" this}}
+                        {{/each}}
+                    </section>
+                </div>
+            </div>
+            <div class="right-area">
+                <div class="gear-container-area carry-container">
+                    <label class="gear-title">In hands</label>
+                    <section class="gear-list carry-list">
+                        {{#unless Carry}}
+                        <label style="text-align:center; color:gray;">None</label>
+                        {{/unless}}
+                        {{#each Carry}}
+                            {{> "systems/rimtop/templates/partials/gear-thing-partial.hbs" this}}
+                        {{/each}}
+                    </section>
+                </div>
+                <div class="gear-container-area inventory-container">
+                    <label class="gear-title">Inventory</label>
+                    <section class="gear-list inventory-list">
+                        {{#unless Inventory}}
+                        <label style="text-align:center; color:gray;">None</label>
+                        {{/unless}}
+                        {{#each Inventory}}
+                            {{> "systems/rimtop/templates/partials/gear-thing-partial.hbs" this}}
+                        {{/each}}
+                    </section>
+                </div>
+            </div>
+        </dev>
+    </div>
+{{/with}}
+{{/if}}
+</section>

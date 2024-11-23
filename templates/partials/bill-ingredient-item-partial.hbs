@@ -1,0 +1,69 @@
+<div class="bill-ingredient-container">
+    {{#if Category}}
+    <div class="fold-out">
+        {{#if Label}}
+            <label class="ingredient-toggle" data-def="{{DefName}}" data-category="{{Category}}">
+                <div>
+                {{#if expanded}}
+                <i class="fold-out-icon fa-fw fas fa-caret-down"></i>
+                {{else}}
+                <i class="fold-out-icon fa-fw fas fa-caret-right"></i>
+                {{/if}}
+                {{Label}}
+                </div>
+                {{#ifEquals Allows 0}}    
+                    <i class="toggle-on-icon ingredient-icon fa-fw fas fa-check"></i>
+                {{/ifEquals}}
+
+                {{#ifEquals Allows 1}}
+                    <i class="toggle-off-icon ingredient-icon fa-fw fas fa-xmark"></i>
+                {{/ifEquals}}
+                {{#ifEquals Allows 2}}
+                    <i class="toggle-partial-icon ingredient-icon fa-fw fas">~</i>
+                {{/ifEquals}}
+            </label>
+            <div class="category-container">
+                {{#if expanded}}
+                    {{#each SpecialFilterJsons}}
+                        {{>"systems/rimtop/templates/partials/bill-ingredient-item-partial.hbs" this categoryDef=../DefName}}
+                    {{/each}}
+
+                    {{#each CategoryJson}}
+                        {{>"systems/rimtop/templates/partials/bill-ingredient-item-partial.hbs" this categoryDef=../DefName}}
+                    {{/each}}
+
+                    {{#each ThingJson}}
+                        {{>"systems/rimtop/templates/partials/bill-ingredient-item-partial.hbs" this categoryDef=../DefName}}
+                    {{/each}}
+                {{/if}}
+            </div>
+        {{else}}
+
+            {{#each SpecialFilterJsons}}
+                {{>"systems/rimtop/templates/partials/bill-ingredient-item-partial.hbs"}}
+            {{/each}}
+
+            {{#each CategoryJson}}
+                {{>"systems/rimtop/templates/partials/bill-ingredient-item-partial.hbs"}}
+            {{/each}}
+
+            {{#each ThingJson}}
+                {{>"systems/rimtop/templates/partials/bill-ingredient-item-partial.hbs"}}
+            {{/each}}
+        {{/if}}
+    </div>
+    {{else}}
+    <div class="toggleable-item">
+        <label class="ingredient-toggle" data-def="{{DefName}}" data-filter="{{Filter}}" data-category-def="{{categoryDef}}" data-tooltip="{{Tooltip}}"  data-tooltip-direction="RIGHT">{{Label}}
+            <div>
+                <label>{{{ResourceCounter}}}</label>
+            {{#if Allows}}    
+                <i class="toggle-on-icon ingredient-icon fa-fw fas fa-check"></i>
+            {{else}}
+                <i class="toggle-off-icon ingredient-icon fa-fw fas fa-xmark"></i>
+            {{/if}}
+            </div>
+        </label>
+    </div>
+    {{/if}}
+</div>

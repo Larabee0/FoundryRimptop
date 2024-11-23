@@ -1,0 +1,116 @@
+.base-actor-stat-card{
+    
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.tab{
+    height: calc(100% - 70px);
+}
+
+.data-refresh-icon:hover{
+    text-shadow: 0 0 10px var(--color-shadow-primary);
+}
+
+.stat-card-container{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    .upper-area{        
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        margin-left: 16px;
+        margin-right: 16px;
+        .stat-refresh-icon{
+            margin-right: 16px;
+        }
+        .stat-card-title{
+            font-size: larger;
+            font-weight: bold;
+        }
+        .back-button{
+            height: 100%;
+            width: 25%;
+        }
+    }
+    
+    .lower-area{
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+        width: 100%;
+        .details-area{
+            width: 50%;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            .hyperlink-label{
+                padding: 8px;
+                color:cadetblue
+            }
+            .hyperlink-label:hover{
+                color:yellow
+            }
+        }
+        .stat-list{
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 100%;
+            .stat-card-search-label{
+                height:fit-content;
+                width: 90%;
+                display: flex;
+                flex-direction: column;
+                margin-left: 16px;
+                margin-right: 16px;
+            }
+            .table{
+                display: flex;
+                flex-direction: column;
+                overflow-x: hidden;
+                overflow-y: scroll;
+                height: 70%;
+                width: 90%;
+                .stat-category-container{
+
+                    border-bottom-style: solid;
+                    border-bottom-width: 1px;
+                    border-bottom-color: lightgray;
+                }
+                .stat-category-label{
+                   font-weight: bold;
+                   font-size: large;
+                   color: lightgray;
+                }
+                .stat-td{
+                    width: 50%;
+                    padding: 8px;
+                }
+                .stat-value-td{
+                    align-items: end;
+                    text-align: right;
+                    .stat-value{
+                       text-align: end;
+                    }
+                }
+                .item-row{
+                    background-color: transparent;
+                }
+                .stat-item-container:hover{
+                    background-color: rgba(211, 211, 211, 0.266);
+
+                }
+                .stat-item-container:active{
+                    background-color: rgba(211, 211, 211, 0.266);
+
+                }
+            }
+
+        }
+    }
+}

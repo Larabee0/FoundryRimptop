@@ -1,0 +1,41 @@
+<div class="verb-container" data-tooltip="{{Tooltip}}" data-tooltip-direction="RIGHT">
+    <div class="info-row">
+        <label>{{Label}}</label>
+        <div class="weapon-info">
+            {{#if AbilityEntries}}
+            <div data-thingId="{{VerbOwnerId}}" class="column action-column ability-cast">
+                <label style="text-align:center;">Ability</label>
+                {{#each AbilityEntries}}
+                <label class="verb-info" data-tooltip="{{Tooltip}}" data-tooltip-direction="RIGHT">{{Label}}</label>
+                {{/each}}
+            </div>
+            {{/if}}
+            {{#if RangedEntries}}
+            <div data-thingId="{{VerbOwnerId}}" class="column action-column ranged-attack">
+                <label style="text-align:center;">Ranged</label>
+                {{#each RangedEntries}}
+                <label class="verb-info" data-tooltip="{{Tooltip}}" data-tooltip-direction="RIGHT">{{Label}}</label>
+                {{/each}}
+            </div>
+            {{/if}}
+            {{#if MeleeEntries}}
+            <div data-thingId="{{VerbOwnerId}}" class="column action-column melee-attack">
+                <label style="text-align:center;">Melee</label>
+                {{#each MeleeEntries}}
+                <label class="verb-info" data-tooltip="{{Tooltip}}" data-tooltip-direction="RIGHT">{{Label}}</label>
+                {{/each}}
+            </div>
+            {{/if}}
+        </div>
+    </div>
+    <div class="action-row">
+        {{#if EquippableNow}}
+        <i data-thingId="{{VerbOwnerId}}" class="thing-equip gear-thing-action-icon fa-fw fas fa-screwdriver-wrench" data-tooltip="Equip" data-tooltip-direction="RIGHT"></i>
+        {{else}}
+        {{#if UnEquippableNow}}
+        <i data-thingId="{{VerbOwnerId}}" class="thing-drop gear-thing-action-icon fa-fw fas fa-arrow-down-from-bracket" data-tooltip="Unequip" data-tooltip-direction="RIGHT"></i>
+        {{/if}}
+        {{/if}}
+        <i data-thingId="{{VerbOwnerId}}" class="thing-info gear-thing-action-icon fa-fw fas fa-square-info" data-tooltip="View information." data-tooltip-direction="RIGHT"></i>
+    </div>
+</div>

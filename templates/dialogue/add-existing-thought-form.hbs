@@ -1,0 +1,31 @@
+<section class="tab standard-form pawn-actor-tab add-existing-thought-form {{tabs.premadeThoughts.cssClass}}" data-tab="premadeThoughts" data-group="{{tabs.premadeThoughts.group}}">
+    <div class="existing-thoughts-list" id="existing_thoughts_list">
+        {{#each thoughts}}
+            {{#each Stages}}
+                {{#if Visible}}
+                    <label class="thought-label" data-def="{{@../key}}" data-stage="{{@index}}" data-tooltip="{{Desc}}<br><br>Duration {{../Duration}} days<br><br>Stack limit {{../StackLimit}}"  data-tooltip-direction="RIGHT">{{Label}} {{Mood}}</label>
+                {{/if}}
+            {{/each}}
+        {{/each}}
+    </div> 
+    <div class="selected-options">
+        {{#if selectedThought}}
+            {{#with (lookup thoughts selectedThought) as |def|}}
+                {{#with (lookup Stages ../selectedStage) as |stage|}}
+                    <label class="selected-thought-label" data-tooltip="{{stage.Desc}}<br><br>Duration {{def.Duration}} days<br><br>Stack limit {{def.StackLimit}}"  data-tooltip-direction="RIGHT">{{stage.Label}} {{stage.Mood}}</label>
+                    <label class="add-thought-input">Duration override (days)<input name="duration-input-b" type="number" value={{../../selectedDuration}}></input></label>
+                    {{#if stage.RequiresOtherPawn}}
+                        {{#if ../../otherPawns}}
+                            <label class="add-thought-input">OTHER_PAWN
+                                <select class="other-pawn-input" name="other-pawn-b">
+                                    {{selectOptions ../../otherPawns selected=../../selectedPawn}}
+                                </select>
+                            </label>
+                        {{/if}}
+                    {{/if}}
+                    <button data-action="submitPreMade">Add</button>
+                {{/with}}
+            {{/with}}
+        {{/if}}
+    </div>
+</section>

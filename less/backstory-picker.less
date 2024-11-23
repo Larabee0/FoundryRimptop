@@ -1,0 +1,51 @@
+#backstory-picker{
+    input[disabled] {pointer-events:none}
+    .container{
+        display: flex;
+        flex-direction: column;
+        height: 100% !important;
+    }
+    .upper-area{
+        
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        height: 95% !important;
+        flex-shrink: 1;
+        .left-area{
+            display: flex;
+            flex-direction: column;
+            margin: 8px;
+            .backstory-list{
+                overflow-x: hidden;
+                overflow-y: scroll;
+                .backstory-item{
+                    background-color: transparent;
+                    .backstory-item{
+                        display: flex;
+                        align-items: center;
+                    }
+                }
+                .backstory-item:hover{
+                    background-color: #868686;
+                }
+            }
+        }
+        .right-area{
+            margin: 8px;
+            display: flex;
+            flex-direction: column;
+            width: 50%;
+            .title{
+                margin-top:8px;
+                
+                color: rgb(230, 230, 76);
+            }
+        }
+    }
+    .lower-area{
+        display: flex;
+        flex-direction: column;
+        height: 100% !important;
+    }
+}

@@ -1,0 +1,36 @@
+<div class="needs-bar" data-tooltip="{{Tooltip}}"  data-tooltip-direction="RIGHT">
+    <label style="margin-left:30px">{{Label}}</label>
+    <div class="bar-container">
+        {{#if DrawDecrease}}
+        <div class="change-arrow" style="border-bottom-color: #CE594A;transform:rotate(-90deg);"></div>
+        {{else}}
+        <div class="change-arrow" style="border-bottom-color: transparent;transform:rotate(-90deg);"></div>
+        {{/if}}
+        <div class="bar-background">
+            <div class="bar-fill" style="width:calc(({{Fill}} * 100%));"></div>
+            {{#if InstantMarker}}
+            <div class="instant-marker" style="left:calc(({{InstantMarker}} * 100%));"></div>
+            {{/if}}
+
+            {{#each Thres as |width|}}
+            {{#with (lookup ../ThresColor @index) as |color|}}
+            <div class="bar-threshold" style="background-color:#{{color}};left:calc(({{width}} * 100%));"></div>
+            {{/with}}
+            {{/each}}
+            {{#each Div  as |width|}}
+            {{#with (lookup ../DivColor @index) as |color|}}
+            <div class="bar-div" style="background-color:#{{color}};left:calc(({{width}} * 100%));">
+                <div class="div-triangle" style="border-bottom-color: #{{color}}; top:0px;transform:rotate(180deg);"></div>
+                <div class="div-triangle" style="border-bottom-color: #{{color}}; bottom:0px;transform:rotate(0deg);"></div>
+            </div>
+            {{/with}}
+            {{/each}}
+        </div>
+        {{#if DrawIncrease}}
+        <div class="change-arrow" style="border-bottom-color: #7AC652;transform:rotate(90deg);"></div>
+        {{else}}
+        
+        <div class="change-arrow" style="border-bottom-color: transparent;transform:rotate(90deg);"></div>
+        {{/if}}
+    </div>
+</div>  

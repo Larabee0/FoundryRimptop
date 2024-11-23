@@ -1,0 +1,116 @@
+<form id="{{id}}" class="{{classes}}" data-appid="{{appId}}" autocomplete="off" onsubmit="event.preventDefault();">
+
+    <div class="col left">
+        <div class="attribute elevation" data-tooltip="HUD.Elevation">
+            <i class="fas fa-angle-up"></i>
+            <input type="text" name="elevation" value="{{elevation}}" {{disabled (or locked (and isGamePaused (not isGM)))}}>
+        </div>
+
+        <div class="control-icon" data-action="sort-up" data-tooltip="HUD.ToFront">
+            <img src="{{icons.up}}" width="36" height="36"/>
+        </div>
+
+        <div class="control-icon" data-action="sort-down" data-tooltip="HUD.ToBack">
+            <img src="{{icons.down}}" width="36" height="36"/>
+        </div>
+
+        {{#if canConfigure}}
+        <div class="control-icon" data-action="config" data-tooltip="HUD.OpenConfig">
+            <i class="fas fa-cog"></i>
+        </div>
+        {{/if}}
+    </div>
+
+    <div class="col middle">
+        <div class="attribute bar2">
+            {{#if displayBar2}}
+            <input type="text" name="bar2" value="{{bar2Data.value}}" {{#unless bar2Data.editable}}disabled{{/unless}}>
+            {{/if}}
+        </div>
+
+        <div class="attribute bar1">
+            {{#if displayBar1}}
+            <input type="text" name="bar1" value="{{bar1Data.value}}" {{#unless bar1Data.editable}}disabled{{/unless}}>
+            {{/if}}
+        </div>
+    </div>
+
+    <div class="col right">
+        {{#if isGM}}
+        <div class="control-icon {{visibilityClass}}" data-action="visibility" data-tooltip="HUD.ToggleVis">
+            <img src="{{icons.visibility}}" width="36" height="36"/>
+        </div>
+        {{/if}}
+
+        <div class="control-icon {{effectsClass}}" data-action="effects" data-tooltip="HUD.AssignStatusEffects">
+            <img src="{{icons.effects}}" width="36" height="36"/>
+        </div>
+        <div class="status-effects">
+            {{#each statusEffects as |status|}}
+            <img class="effect-control {{status.cssClass}}" src="{{status.src}}"
+                 {{#if status.title}}data-tooltip="{{status.title}}"{{/if}} data-status-id="{{status.id}}"/>
+            {{/each}}
+        </div>
+        
+        {{#if showEndTurn}}
+        <div class="control-icon " data-action="push-initative" data-tooltip="Push initative (end turn)">
+            <i class="fas fa-arrows-up-to-line"></i>
+        </div>
+        {{/if}}  
+
+        <div class="control-icon {{showTokenControls}}" data-action="toggle-token-controls" data-tooltip="Token controls">
+            <i class="fas fa-list-check"></i>
+        </div>
+        
+        
+        <div class="control-icon {{hasCover}}" data-action="toggle-cover-controls" data-tooltip="Cover settings">
+            <i class="fas fa-user-shield"></i>
+        </div>
+        
+        <div class="status-effects {{showCoverControls}}" style="grid-template-columns: repeat(2, 50px); width:fit-content; padding-left:8px;">
+            <div class="control-icon {{noCover}}" data-action="set-cover" data-cover="0" data-tooltip="0% cover" style="margin-top:8px;margin-bottom:8px;">
+                <i class="fa-light fa-shield-slash"></i>
+            </div>
+            <div class="control-icon {{quarterCover}}" data-action="set-cover" data-cover="25" data-tooltip="25% cover">
+                <i class="fa-solid fa-shield-quartered"></i>
+            </div>
+            <div class="control-icon {{halfCover}}" data-action="set-cover" data-cover="50" data-tooltip="50% cover">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="control-icon {{threeQuarterCover}}" data-action="set-cover" data-cover="75" data-tooltip="75% cover">
+                <i class="fa-duotone fa-solid fa-shield-quartered"></i>
+            </div>
+            <div class="control-icon {{fullCover}}" data-action="set-cover" data-cover="100" data-tooltip="100% cover">
+                <i class="fas fa-shield"></i>
+            </div>
+        </div>
+        
+        <div class="status-effects {{showTokenControls}}" style="grid-template-columns: repeat(2, 50px); width:fit-content; padding-left:8px;">
+        
+            <div class="control-icon {{targetClass}}" data-action="target" data-tooltip="HUD.ToggleTargetState" style="margin-top:8px;margin-bottom:8px;">
+                <i class="fas fa-bullseye"></i>
+            </div>
+            <div class="control-icon " data-action="wait-action" data-wait-type="turn" data-tooltip="Wait for rest of remaining ticks">
+                <i class="fas fa-hourglass-end"></i>
+            </div>
+
+            {{#if canToggleCombat}}
+            <div class="control-icon {{combatClass}}" data-action="combat" data-tooltip="HUD.ToggleCombatState">
+                <img src="{{icons.combat}}" width="36" height="36"/>
+            </div>
+            {{/if}}
+            <div class="control-icon " data-action="wait-action" data-wait-type="normal" data-tooltip="Wait 30 ticks">
+                <i class="fas fa-hourglass"></i>
+            </div>
+
+            <div class="control-icon {{spawnClass}}" data-action="set-spawned" data-tooltip="Toggle Spawned">
+                <img src="systems/rimtop/assets/SpawnIcon.png" width="36" height="36"/>
+                <!--<i class="spawn-icon"></i>-->
+            </div>
+
+            <div class="control-icon " data-action="wait-action" data-wait-type="custom" data-tooltip="Wait custom ticks<br>(set in character sheet)">
+                <i class="fas fa-hourglass-clock"></i>
+            </div>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,48 @@
+<div id="work-bills-container" class="work-bills-container">
+
+    {{#if showBills}}
+    <button id="add-bill-button" class="bill-window-button">Add bill</button>
+    <section class="table-container">
+        <table id="sub-scroll-container" class="table table-striped">
+            <tbody style="display:flex; flex-direction:column">
+            {{#each workBills.Bills}}
+                <tr style="display:flex; flex-direction:column">
+                    <td style="display:flex; flex-direction:column">
+                        {{>"systems/rimtop/templates/partials/bill-partial.hbs" this repeatModes=../workBills.repeatModes}}
+                    </td>
+                </tr>
+            {{/each}}
+            </tbody>
+        </table>
+    </section>
+    {{else}}
+    <button id="back-from-add-button" class="bill-window-button">Back to bill display</button>
+    {{#with cachedRecipes}}
+    <label class="search-label"><input placeholder="Search" type="text" id="filter_field" name="filter_field"></label>
+
+    <section class="table-container">
+        <table id="sub-scroll-container" class="table table-striped">
+            <tbody style="display:flex; flex-direction:column">
+            {{#each Categories}}
+                <tr style="display:flex; flex-direction:column">
+                    <td class="hoverable" style="display:flex; flex-direction:column">
+                        <label><input class="category-toggle" type="checkbox" data-def="{{DefName}}" {{checked On}}>{{Label}} category</input></label>
+                    </td>
+                </tr>
+            {{/each}}
+            {{#each Recipies}}
+                {{#if On}}
+                <tr style="display:flex; flex-direction:column">
+                    <td class="hoverable" style="display:flex; flex-direction:column">
+                        <label class="recipe-item" data-def="{{DefName}}">{{Label}}</label>
+                    </td>
+                </tr>
+                {{/if}}
+            {{/each}}
+            </tbody>
+        </table>
+    </section>
+
+    {{/with}}
+    {{/if}}
+</div>

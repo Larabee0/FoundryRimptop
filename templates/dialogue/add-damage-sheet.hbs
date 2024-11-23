@@ -1,0 +1,79 @@
+<div class="container">
+    {{#if damageDefs}}
+    <div style="height:30px;"></div>
+    {{/if}}
+    {{#if targetableParts}}
+    <button data-action="backToDamageDef">Back</button>
+    {{/if}}
+    {{#if finalSettings}}
+    <button data-action="backToBodyParts">Back</button>
+    {{/if}}
+    <div class="horizontal-container">
+        <div class="left">
+            <div id="damage-def-list" class="damage-def-list">
+                {{#unless finalSettings}}
+                {{#if targetableParts}}
+                {{#each targetableParts}}
+                    <label class="part-item" data-body-part="{{@key}}">{{Label}}</label>
+                {{/each}}
+                {{else}}
+                {{#each damageDefs}}
+                    <label class="damage-def-item" data-def="{{@key}}">{{DisplayName}}</label>
+                {{/each}}
+                {{/if}}
+                {{else}}
+                <label>Will apply {{applicationLabel}}</label>
+                {{#if HarmsHealth}}
+                <label>Damage<input name="damage-input" type="number" value="{{damageCache}}"></input></label>
+                <label>Armor pen %<input name="armor-input" type="number" value="{{armorPenCache}}"></input></label>
+                <label>Optional instigator</label>
+                <select class="instigator-input" name="instigator-options">
+                    {{selectOptions instigators selected=selectedInstigator}}
+                </select>
+                {{#if weaponDefs}}
+                <label>Optional source</label>
+                <select class="weapon-input" name="weapon-options">
+                    {{selectOptions weaponDefs selected=selectedWeaponDef}}
+                </select>
+                {{/if}}
+                {{/if}}
+                {{/unless}}
+            </div>
+        </div>
+        {{#unless finalSettings}}
+        {{#unless targetableParts}}
+        <div class="right">
+            {{#with (lookup damageDefs selectedDamageDef)}}
+            <label class="def-info-label" style="font-weight:bold">Label: {{DisplayName}}</label>
+            <label class="def-info-label">DefName: {{../selectedDamageDef}}</label>
+            <label class="def-info-label">Harms health: {{HarmsHealth}}</label>
+            <label class="def-info-label">Ranged: {{Ranged}}</label>
+            <label class="def-info-label">Explosive: {{Explosive}}</label>
+            {{#if ArmorCategory}}
+            <label class="def-info-label">Armor category: {{ArmorCategory}}</label>
+            {{/if}}
+            {{#if HediffLabel}}
+            <label class="def-info-label">Main hediff: {{HediffLabel}}</label>
+            {{/if}}
+            {{#if AdditionalHediffDefs}}
+            <label class="def-info-label">Additional hediffs:</label>
+            {{#each AdditionalHediffDefs}}
+            <label class="def-info-label">{{this}}</label>
+            {{/each}}
+            {{/if}}
+            {{/with}}
+        </div>
+        {{/unless}}
+        {{/unless}}
+    </div>
+    {{#unless targetableParts}}
+    {{#unless finalSettings}}
+    {{#if selectedDamageDef}}
+    <button data-action="pickBodyPart">Next</button>
+    {{/if}}
+    {{/unless}}
+    {{/unless}}
+    {{#if finalSettings}}
+    <button data-action="applyDamage">Confirm</button>
+    {{/if}}
+</div>

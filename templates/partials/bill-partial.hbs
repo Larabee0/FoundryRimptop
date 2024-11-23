@@ -1,0 +1,40 @@
+<div class="bill-element-container" data-bill-id="{{LoadId}}" data-map-id="{{MapLoadId}}">
+    <div class="up-down">
+        {{#if MoveUp}}
+        <i data-down="false" class="bill-icon up-down-icon fa-fw fas fa-up" data-tooltip="Move up"  data-tooltip-direction="RIGHT"></i>
+        {{else}}
+        <i class="bill-icon" style="height:26px"></i>
+        {{/if}}
+        {{#if MoveDown}}
+        <i  data-down="true" class="bill-icon up-down-icon fa-fw fas fa-down" data-tooltip="Move down"  data-tooltip-direction="RIGHT"></i>
+        {{/if}}
+    </div>
+    <div class="main-area">
+        <div class="top-row">
+            {{#if Suspended}}
+            <label class="bill-label" style="color:var(--color-shadow-primary)" data-tooltip="{{Suspended}}"  data-tooltip-direction="RIGHT"><s>{{BillLabel}}</s></label>
+            {{else}}
+            <label class="bill-label" style="color:{{BaseColor}}">{{BillLabel}}</label>
+            {{/if}}
+            <div style="display:flex;flex-direction:row;justify-content:end">
+                <i class="bill-icon suspend-icon fa-fw fas fa-s" data-tooltip="{{SuspendedTooltip}}"  data-tooltip-direction="RIGHT"></i>
+                <i class="bill-icon delete-icon fa-fw fas fa-x" data-tooltip="{{DeleteToolTip}}"  data-tooltip-direction="RIGHT"></i>
+            </div>
+        </div>
+        <div class="bottom-row">
+            {{#unless RepeatMode}}
+            <i data-recipe-def="{{RecipeDef}}" class="bill-icon info-icon fa-fw fas fa-square-info" data-tooltip="View information."  data-tooltip-direction="RIGHT"></i>
+            {{/unless}}
+            {{#if RepeatMode}}
+            <label class="status-string">{{StatusString}}</label>
+            <i data-offset="-1" class="bill-icon plus-minus-icon fa-fw fas fa-minus"></i>
+            <i data-offset="1" class="bill-icon plus-minus-icon fa-fw fas fa-plus"></i>
+            <select class="repeat-mode-input" name="repeat-mode-input">
+                {{selectOptions repeatModes selected=curRepeatMode}}
+            </select>
+            
+            <button class="bill-details-button">Details...</button>
+            {{/if}}
+        </div>
+    </div>
+</div>

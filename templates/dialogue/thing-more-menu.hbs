@@ -1,0 +1,28 @@
+<div class="container">
+    <label>{{thingContext.Label}}</label>
+    {{#if selectAction}}
+    <div class="action-selector">
+        {{#with thingContext}}
+        {{#if CanDropOnMap}}
+        <button class="more-menu-button" data-action="sendToScene">Drop on current scene</button>
+        {{/if}}
+        {{#unless HeldByWorld}}
+        <button class="more-menu-button" data-action="sendToWorld">Send to world inventory</button>
+        {{/unless}}
+        <button class="more-menu-button" data-action="selectPawn">Send to pawn</button>
+        {{#if Spawned}}
+        <button class="more-menu-button" data-action="despawn">Despawn</button>
+        {{/if}}
+        {{/with}}
+    </div>
+    {{/if}}
+    {{#if selectPawn}}
+    <div class="select-destination-pawn">
+        <button class="more-menu-button" data-action="goBackFromSelectPawn">Back</button>
+        {{#each targetablePawns}}
+        {{log this}}
+        <button class="more-menu-button" data-action="pickPawn" data-pawn-id="{{pawnId}}" data-actor-id="{{actorId}}">{{Name}}</button>
+        {{/each}}
+    </div>
+    {{/if}}
+</div>

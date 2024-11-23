@@ -1,0 +1,15 @@
+<div class="stat-roll-chat-message" data-tooltip="{{SuccessChanceExplanation}}" data-tooltip-direction="LEFT">
+    <label>Rolling: {{Label}}</label>
+    {{#if ValueStat}}
+        <label>Result: {{Value}}</label>
+    {{else}}
+        <div class="percent-stat">
+            <label >Chance post-proccessed: {{SuccessChance}}</label>
+        {{#if Success}}
+            <label>Result outcome: {{SuccessQuality}}</label>
+        {{else}}
+            <label>Result: Failure</label>
+        {{/if}}
+        </div>
+    {{/if}}
+</div>

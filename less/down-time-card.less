@@ -1,0 +1,172 @@
+.down-time-activity-container{
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    margin: 4px;
+    border: 1px solid var(--color-border-light-primary);
+    .title{
+        font-weight: bold;
+        margin-left: 7.5%;
+    }
+    .weight-label{
+        text-align: center;
+        margin: 4px;
+    }
+    .duration-title{
+        text-align: center;
+    }
+    .duration-min-max-container{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        margin: 4px;
+       //.duration-label{
+       //} 
+    }
+    .edit-button{
+        width: 75%;
+        align-self: center;
+    }
+}
+
+.down-time-container{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    .upper-area{
+        display: flex;
+        flex-direction: row;
+        .down-time-refresh-icon{
+            margin-right: 16px;
+        }
+        .down-time-card-title{
+            font-size: larger;
+            font-weight: bold;
+        }
+    }
+    .main-area{
+        display: flex;
+        flex-direction: column;
+        .columns{
+            display: flex;
+            flex-direction: row;
+            .activity-container{
+                display: flex;
+                flex-direction: column;
+                width: 40%;
+            }
+            .current-activity-container{
+                display: flex;
+                flex-direction: column;
+                width: 60%;
+                .extra-settings{
+                    display: flex;
+                    flex-direction: column;
+                    width: 100%;
+                    margin: 2px;
+                    padding: 4px;
+                }
+                .extra-input{
+                    margin: 4px;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                }
+                .current-activity{
+                    display: flex;
+                    flex-direction: column;
+                    flex-grow: 1;
+                    width: 100%;
+                    margin: 4px;
+                    border: 1px solid var(--color-border-light-primary);
+                    .current-activity-label{
+                        margin: 8px;
+                    }
+                }
+            }
+            .activity-title{
+                font-weight: bold;
+                margin: 8px;
+            }
+        }
+    }
+}
+
+.edit-activity-sheet{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding: 2px;
+    .time-min-max{
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        align-items: center;
+        .time-label{
+            width: 50px;
+            margin: 4px;
+            text-align: center;
+        }
+        .range-container{
+            display: flex;
+            flex-direction: row;
+            flex-grow: 1;
+            height: fit-content;
+        }
+    }
+    .item-container{
+        display: flex;
+        flex-direction: column;
+        margin: 4px;
+    }
+    .random-skill-item{
+        display: flex;
+        flex-direction: row;
+    }
+    .learning-mode-input{
+        height: 32px;
+        width:100%;
+        margin: 4px;
+    }
+}
+
+.work-bills-container{
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 100px);
+    width: 100%;
+    padding: 2px;
+    .bill-window-button{
+        margin: 4px;
+        width: 100%;
+    }
+    .search-label{
+        margin: 2px;
+    }
+    .table-container{
+        height: calc(100% - 70px);
+        display: flex;
+        flex-direction: column;
+        .table{
+            display: flex;
+            flex-direction: column;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            width: calc(100% - 32px);
+            flex-grow: 1;
+            .hoverable:hover{
+                background-color: #868686;
+            }
+        }
+    }
+}
+
+.inter-pawn-tending{
+    display:flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 100%;
+}

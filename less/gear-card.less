@@ -1,0 +1,138 @@
+.gear-thing-item{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 1px;
+    border: 1px solid var(--color-border-light-primary);
+    .gear-thing-info-row{
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        .gear-thing-label{
+            width: 80%;
+            margin-right: 4px;
+        }
+        .gear-thing-mass-label{
+            width: 20%;
+            text-align: right;
+        }
+    }
+    .gear-thing-info-row:hover{
+        background-color: #868686;
+    }
+    .gear-thing-action-row{
+        display: flex;
+        flex-direction: row;
+        justify-content: end;
+        width: 100%;
+        .gear-thing-action-icon{
+            margin-left: 2px;
+            margin-right: 2px;
+            padding-top: 1px;
+            padding-bottom: 1px;
+        }
+        .gear-thing-action-icon:hover{
+            text-shadow: 0 0 10px var(--color-shadow-primary);
+        }
+    }
+}
+
+
+.gear-card-container{
+    display: flex;
+    flex-direction: column;
+    height: 100% !important;
+    .upper-area{        
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        margin-left: 8px;
+        margin-right: 8px;
+        .gear-refresh-icon{
+            margin-right: 16px;
+        }
+        .gear-card-title{
+            width: 30%;
+            font-size: larger;
+            font-weight: bold;
+        }
+        .mass-carried{
+            margin: 4px;
+        }
+    }
+
+    .lower-area{
+        display: flex;
+        flex-direction: row;
+        height: 100% !important;
+        width: 100%;
+        .gear-title{
+            font-weight: bold;
+        }
+        .gear-container-area{
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100% !important;
+            .gear-list{
+                width: 100%;
+                overflow-x: hidden;
+                overflow-y: scroll;
+                height: 95% !important;
+                margin: 4px;
+                padding: 4px;
+                display: flex;
+                flex-direction: column;
+            }
+            
+        }
+        .left-area{
+            display: flex;
+            flex-direction: column;
+            height: 100% !important;
+            width: 100%;
+            margin: 4px;
+
+            .equippment-container{
+                height: 25% !important;
+                .equippment-list{
+                    height: 80% !important;
+                }
+            }
+            .apparel-container{
+                .comfy-temp{
+                    margin-left: 4px;
+                }
+                .overall-armor-container{
+                    display: flex;
+                    flex-direction: column;
+                    margin-left: 4px;
+                    .overall-armor-label-container{
+                        display: flex;
+                        flex-direction: row;
+                        .overall-armor-label{
+                            margin-left: 4px;
+                            width: 50%;
+                        }
+                    }
+                }
+            }
+        }
+        .right-area{
+            display: flex;
+            flex-direction: column;
+            height: 100% !important;
+            width: 100%;
+            margin: 4px;
+            .carry-container{
+                height: 25% !important;
+                .carry-list{
+                    height: 80% !important;
+                }
+            }
+        }
+    }
+}

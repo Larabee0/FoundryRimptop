@@ -1,0 +1,35 @@
+<div class="edit-activity-sheet">
+    <label>Activity pick weight: {{weight}}<input id="weight-slider" type="range" min="0" max="1" value="{{weight}}" step="0.01"></input></label>
+    <label>Activity duration range:</label>
+    <div class="time-min-max">
+        <label class="time-label">{{min}} Hrs</label>
+        <div class="range-container" id="range-slider">
+        {{>"systems/rimtop/templates/partials/double-slider-partial.hbs"lowerValue=min upperValue=max  min="0.5" max="6" step="0.1"}}
+        </div>
+        <label class="time-label">{{max}} Hrs</label>
+    </div>
+
+    <div class="item-container">
+    {{#ifEquals activityType "Learning"}}
+        <select class="learning-mode-input" name="learning-mode">
+            {{selectOptions learningModes selected=selectedLearnMode}}
+        </select>
+            {{#ifEquals selectedLearnMode "2"}}
+                <label class="random-skill-item"><input class="random-skill-input" id="any" type="checkbox" {{checked anyValue}}></input>Any</label>
+                {{#each randomSkills}}
+                    <label class="random-skill-item"><input data-index="{{@index}}" class="random-skill-input" type="checkbox" {{checked Learning}}></input>{{DisplayName}}</label>
+                {{/each}}
+            {{/ifEquals}}
+            {{#ifEquals selectedLearnMode "1"}}
+                {{#each randomSkills}}
+                    <label class="random-skill-item"><input data-index="{{@index}}" class="specific-skill-input" type="checkbox" {{checked Specific}}></input>{{DisplayName}}</label>
+                {{/each}}
+            {{/ifEquals}}
+        {{/ifEquals}}
+    </div>
+
+
+    {{#ifEquals activityType "Work"}}
+    {{>"systems/rimtop/templates/partials/work-bills-partial.hbs"}}
+    {{/ifEquals}}
+</div>

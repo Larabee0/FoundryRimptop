@@ -1,0 +1,40 @@
+#medical-bill-picker{
+    height: 100%;
+    .container{
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        .columns{
+            display: flex;
+            flex-direction: row;
+            height: 90%;
+            .left{
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                overflow-x: hidden;
+                overflow-y: scroll;
+                .recipie-item{
+                    padding: 8px;
+                }
+                .recipie-item:hover{
+                    background-color: rgba(211, 211, 211, 0.266);
+
+                }
+            }
+            .right{
+                display: flex;
+                flex-direction: column;
+                margin: 8px;
+                .ingredient-heading{
+                    font-weight: bold;
+                    margin-top: 8px;
+                }
+                .skill-requirements{
+                    font-weight: bold;
+                    margin-top: 8px;
+                }
+            }
+        }
+    }
+}

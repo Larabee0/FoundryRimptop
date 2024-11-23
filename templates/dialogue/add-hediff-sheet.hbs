@@ -1,0 +1,34 @@
+<div class="container">
+    <section class="hediff-list">
+        {{#unless targetableParts}}
+        {{#each hediffs.HediffCategoryLabels}}
+            {{#if (lookup ../this.hediffs.HediffCategoryLookup @key)}}
+                
+                {{#ifEquals @key ../activeCategory}}
+                    <div class="hediff-category-container" data-hediff-category="{{@key}}">
+                        <i class="fa-fw fas fa-arrow-down-right"></i>
+                        <label class="hediff-item hediff-category">{{this}}</label>
+                    </div>
+                    {{#each (lookup ../this.hediffs.HediffCategoryLookup @key)}}
+                        {{#with (lookup ../../hediffs.HediffLookup this)}}
+                            <label class="hediff-item hediff-label" data-hediff-def="{{DefName}}" data-tooltip="{{Description}}"  data-tooltip-direction="RIGHT">{{DisplayName}}</label>
+                        {{/with}}
+                    {{/each}}
+                {{/ifEquals}}
+                {{#ifNotEqual @key ../activeCategory}}
+                    <div class="hediff-category-container" data-hediff-category="{{@key}}">
+                        <i class="fa-fw fas fa-arrow-right"></i>
+                        <label class="hediff-item hediff-category">{{this}}</label>
+                    </div>
+                {{/ifNotEqual}}
+            {{/if}}
+        {{/each}}
+        {{/unless}}
+        {{#if targetableParts}}
+        <button data-action="backToDefPick">Back</button>
+        {{#each targetableParts}}
+        <label class="hediff-item body-part-label" data-index="{{Index}}">{{Label}}</label>
+        {{/each}}
+        {{/if}}
+    </section>
+</div>

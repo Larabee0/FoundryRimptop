@@ -1,0 +1,108 @@
+<div class="time-controls-container">
+    
+    <div class="upper-area">
+        <div>
+            <i class="data-refresh-icon time-refresh-icon fa-fw fas fa-arrows-rotate" data-action="refreshTime" data-tooltip="Refresh time data from RimWorld app"  data-tooltip-direction="RIGHT"></i>
+        </div>
+    </div>
+    <div class="main-area">
+        <div class="status-display">
+            <div class="combat-mode">
+                <label>
+                {{#unless DisableCombatToggle}}
+                <input type="checkbox" {{checked CombatMode}} data-action="toggleCombat"></input>
+                {{else}}
+                <input type="checkbox" disabled {{checked CombatMode}}></input>
+                {{/unless}}
+                Combat mode
+                </label>
+            </div>
+            <div class="time-readout-container">
+                <label class="title">Current date-time</label>
+                <label>Time: {{InGameTime}}</label>
+                <label>Date: {{InGameDate}}</label>
+                <label>Ticks: {{GameTicks}}</label>
+            </div>
+            <div class="things-being-ticked">
+                <label class="title">Things being ticked</label>
+                <label data-tooltip="Every tick<br>Every 16ms"  data-tooltip-direction="RIGHT">Normal: {{NormalTicked}}</label>
+                <label data-tooltip="Every 250 ticks<br>Every 4.2s<br><br>Next tick in {{NextRareTick}}ticks"  data-tooltip-direction="RIGHT">Rare: {{RareTicked}}</label>
+                <label data-tooltip="Every 2000 ticks<br>Every 33.4s<br><br>Next tick in {{NextLongTick}}ticks"  data-tooltip-direction="RIGHT">Long: {{LongTicked}}</label>
+            </div>
+            <div class="time-conversion">
+                <label class="title">Time conversion</label>
+                <label>Ticks 60 = 1 real second</label>
+                <label>Combat round = 360ticks</label>
+                {{#unless CombatMode}}
+                <label><br></label>
+                <label>In-game hour = 41.7s</label>
+                <label>In-game day = 16.7m</label>
+                <label>In-game year = 16.7hr</label>
+                <label><br></label>
+                <label>In-game hour = 2500ticks</label>
+                <label>In-game day = 60 000ticks</label>
+                <label>In-game year = 3 600 000ticks</label>
+                {{/unless}}
+            </div>
+            {{#unless CombatMode}}
+            <div class="specific-time">
+                <label>Specific in-game days</label>
+                <input class="number-input" id="specific-days" type="number" value="1"></input>
+                <button class="action-button" data-action="specificDays">Do specific in-game days</button>
+            </div>
+            <div class="specific-time">
+                <label>Specific in-game years</label>
+                <input class="number-input" id="specific-years" type="number" value="1"></input>
+                <button class="action-button" data-action="specificYears">Do specific in-game years</button>
+            </div>
+            {{/unless}}
+        </div>
+        <div class="action-display">
+            <button class="action-button" data-action="singleTick">Do single tick</button>
+            <button class="action-button" data-action="singleSecond">Do single second</button>
+            <button class="action-button" data-action="combatRound">Do combat round</button>
+            {{#unless CombatMode}}
+            <button class="action-button" data-action="clearCombatData">Clear combat data</button>
+            {{/unless}}
+            <div class="specific-time">
+                <label>Specific ticks</label>
+                <input class="number-input" id="specific-ticks" type="number" value="60"></input>
+                <button class="action-button" data-action="specificTicks">Do specific ticks</button>
+            </div>
+            <div class="specific-time">
+                <label>Specific real life seconds</label>
+                <input class="number-input" id="specific-seconds" type="number" value="1"></input>
+                <button class="action-button" data-action="specificSeconds">Do specific real seconds</button>
+            </div>
+            {{#unless CombatMode}}
+            <div class="specific-time">
+                <label>Specific in-game hours</label>
+                <input class="number-input" id="specific-hours" type="number" value="1"></input>
+                <button class="action-button" data-action="specificHours">Do specific in-game hours</button>
+            </div>
+            {{/unless}}
+            {{#if timeData}}
+            <div class="running-time-container">
+                
+                <label class="title">Running time passage</label>
+                    
+                {{#unless timeData.completed}}
+                <div class="action-row">
+                <i class="data-refresh-icon time-refresh-icon fa-fw fas fa-ban" data-action="stopTime" data-tooltip="Cancel time passage"  data-tooltip-direction="RIGHT"></i>
+                {{#if timeData.Paused}}
+                <i class="data-refresh-icon time-refresh-icon fa-fw fas fa-play" data-action="playTime" data-tooltip="Pause time passage"  data-tooltip-direction="RIGHT"></i>
+                {{else}}
+                <i class="data-refresh-icon time-refresh-icon fa-fw fas fa-pause" data-action="pauseTime" data-tooltip="Continue time passage"  data-tooltip-direction="RIGHT"></i>
+                {{/if}}
+                </div>
+                {{/unless}}
+                <label>Run for: {{timeData.lastToRunForTicks}}ticks</label>
+                <label>Ticks left: {{timeData.TicksLeft}}</label>
+                <label>Last ticks sse: {{timeData.TicksThisInterval}}</label>
+                <label>Paused: {{timeData.Paused}}</label>
+                <label>Completed: {{timeData.completed}}</label>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</div>

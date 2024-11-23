@@ -1,0 +1,73 @@
+<div class="container">
+        <div class="left-Area">
+            <div class="left-Upper">
+                {{#unless disableSpawnOptions}}
+                {{#if allowWorldSpawn}}
+                <label class="left-row-item radio-button-row" data-tooltip="Select to spawn the thing on the current map"  data-tooltip-direction="RIGHT" ><input type="radio" name="choice" value="one"> Spawn to current map</label>
+                {{/if}}
+                
+                
+                <label class="left-row-item radio-button-row" data-tooltip="Select to spawn the thing to the global inventory"  data-tooltip-direction="RIGHT" ><input type="radio" name="choice" value="two" {{checked defaultGlobalInventory}}> Spawn to global inventory</label>
+
+                {{#if allowSpawnToActor}}
+                <label class="left-row-item radio-button-row" data-tooltip="Select to spawn to the select pawn's inventory<br>Falls back to global inventory"  data-tooltip-direction="RIGHT" ><input type="radio" name="choice" value="three" {{checked defaultPawnInventory}}> Spawn to pawn inventory</label>
+                <label class="left-row-item radio-button-row" data-tooltip="Select to spawn to the select pawn's equipment<br>Falls back to pawn inventory"  data-tooltip-direction="RIGHT" ><input type="radio" name="choice" value="four"> Spawn to pawn equipment</label>
+                <label class="left-row-item radio-button-row" data-tooltip="Select to spawn to the select pawn's apparel<br>Falls back to pawn inventory"  data-tooltip-direction="RIGHT" ><input type="radio" name="choice" value="five"> Spawn to pawn  apparel</label>
+                {{/if}}
+                {{/unless}}
+                <label class="left-row-item">Stack count <input name="stackCount" type="number" min="1" max="10" step="1" value="1"></label>
+                <label class="left-row-item">Search <input type="text" id="thing-search-field" name="thing-search-field"></label>
+            
+                <div class="left-row-item">
+                    <label name="target-thing">Selected Thing: {{selectedThingDef}}</label>
+                </div>
+
+                <div class="left-row-item">
+                    <label name="target-thing">Value per unit: {{selectThingValue}}</label>
+                </div>
+
+                <div class="left-row-item quality-Select" name="quality-selector">
+                    <label>Quality</label>
+                    <select name="qualities">
+                        {{selectOptions qualities selected=selectedQuality}}
+                    </select>
+                </div>
+
+                {{#if stuffForThing}}
+                <div class="left-row-item quality-Select">
+                    <label>Made from</label>
+                    <select name="stuff">
+                        {{selectOptions stuffForThing selected=selectedStuff}}
+                    </select>
+                </div>
+                {{/if}}
+            </div>
+            <div class="left-Lower">
+                {{#if spawnPossible}}
+                <button type="submit" data-action="spawnThing">{{spawnButtonText}}</button>
+                {{/if}}
+                {{#unless spawnPossible}}
+                <button disabled type="button">{{spawnButtonText}} (no selection)</button>
+                {{/unless}}
+            </div>
+        </div>
+        
+        <div class="right-Area" data-tooltip="Click item to select"  data-tooltip-direction="RIGHT">
+            <label data-tooltip="All(Most) thing you can spawn"  data-tooltip-direction="RIGHT">Things</label>
+            <section class="spawnThings-list">
+                <table id="spawn-thing-list-table" class="table table-striped">
+                    <tbody>
+                        {{#each thingDefs}}
+                        <tr class="item-row" data-thing-def="{{this.DefName}}">
+                            <td class="item-container" data-tooltip="{{this.Description}}"  data-tooltip-direction="RIGHT">
+                                <a class="item-action" data-action="selectThing">
+                                    <label>{{this.DisplayName}}</label>
+                                </a>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </section>
+        </div>
+</div>

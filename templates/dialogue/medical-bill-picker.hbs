@@ -1,0 +1,25 @@
+<div class="container">
+    <div class="columns">
+        <div class="left">
+            {{#each recipes.Options}}
+            <label class="recipie-item" data-action="selectBill" data-index="{{@index}}">{{Label}}</label>
+            {{/each}}
+        </div>
+        <div class="right">
+            {{#with (lookup recipes.Options selectedRecipe)}}
+                <label>{{Label}}</label>
+                <label style="margin-top: 8px;"> <span style="font-weight: bold;">Category: </span>{{Category}}</label>
+                {{#with BillInfoJson}}
+                    <label class="skill-requirements">{{SkillRequirement}}</label>
+                    <label class="ingredient-heading">{{IngredientsHeading}}</label>
+                    {{#each Ingredients}}
+                        <label>{{this}}</label>
+                    {{/each}}
+                {{/with}}
+            {{/with}}
+        </div>
+    </div>
+    {{#if selectedRecipe}}
+    <button data-action="submit">Pick</button>
+    {{/if}}
+</div>

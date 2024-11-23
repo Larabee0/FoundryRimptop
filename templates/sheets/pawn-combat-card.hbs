@@ -1,0 +1,124 @@
+<section class="tab standard-form pawn-actor-tab pawn-actor-combat-card {{tabs.combatCard.cssClass}}" data-tab="combatCard" data-group="{{tabs.combatCard.group}}">
+    <div class="combat-card-container">
+        <div class="upper-area">
+            <i class="data-refresh-icon combat-refresh-icon fa-fw fas fa-arrows-rotate" data-action="combatRefresh" data-tooltip="Refresh all combat data from RimWorld app"  data-tooltip-direction="LEFT"></i>
+            <label class="combat-card-title">Combat assist</label>
+            <button id="melee-attack-options" class="melee-attack-options"  data-action="meleeAttackOptions" data-tooltip="Configure the pawn's melee attack verb selection"  data-tooltip-direction="RIGHT">Melee Attack Options</button>
+        </div>
+        {{#with system.combatCard}}
+
+        <dev class="lower-area">
+            <div class="left-area">
+                {{#if Equipped}}
+                <div class="vertical-container equipped-things">
+                    <label class="category-title">Equipped tools</label>
+                    {{#each Equipped}}
+                    {{#with (lookup ../VerbOwners this)}}
+                    {{>"systems/rimtop/templates/partials/verb-partial.hbs"}}
+                    {{/with}}
+                    {{/each}}
+                </div>
+                {{/if}}
+                {{#if Abilities}}
+                <div class="vertical-container abilities-things">
+                    <label class="category-title">Abilities</label>
+                    {{#each Abilities}}
+                    {{#with (lookup ../VerbOwners this)}}
+                    {{>"systems/rimtop/templates/partials/verb-partial.hbs"}}
+                    {{/with}}
+                    {{/each}}
+                </div>
+                {{/if}}
+                {{#if Unarmed}}
+                <div class="vertical-container unarmed-things">
+                    <label class="category-title">Unarmed tools</label>
+                    {{#with (lookup VerbOwners Unarmed)}}
+                    {{>"systems/rimtop/templates/partials/verb-partial.hbs"}}
+                    {{/with}}
+                </div>
+                {{/if}}
+                {{#if Inventory}}
+                <div class="vertical-container equippable-things">
+                    <label class="category-title">Equippable tools</label>
+                    {{#each Inventory}}
+                    {{#with (lookup ../VerbOwners this)}}
+                    {{>"systems/rimtop/templates/partials/verb-partial.hbs"}}
+                    {{/with}}
+                    {{/each}}
+                </div>
+                {{/if}}
+            </div>
+            <div class="right-area">
+                <div class="vertical-container basic-stats" data-tooltip="Mostly fixed Stats that don't change turn-to-turn, of course with injuries they may." data-tooltip-direction="RIGHT">
+                    <label style="text-align:center;">Basic stats</label>
+                    <label class="info-label" data-tooltip="{{TotalTurnTicksTooltip}}" data-tooltip-direction="RIGHT">Total turn budget: {{TotalTurnTicks}} ticks</label>
+                    <label class="info-label" data-tooltip="{{TotalTurnTicksTooltip}}" data-tooltip-direction="RIGHT">Global action speed: {{GlobalActionSpeed}}</label>
+                    <label class="info-label" data-tooltip="How much it costs to move 1 cell in ticks<br><b>This value does not include stagger duration!</b>" data-tooltip-direction="RIGHT">Move cost per cell: {{MoveCostPerCell}} ticks</label>
+                    <label class="info-label" data-tooltip="How far you can move if you spend your whole turn moving.<br>This value is includes stagger duration." data-tooltip-direction="RIGHT">Abs max movement: {{AbsoluteMaxMovement}} cells</label>
+                    {{#if NeuralHeat}}
+                    <label class="info-label">Current neural heat: {{NeuralHeat}}</label>
+                    {{/if}}
+                    {{#if MaxNeuralHeat}}
+                    <label class="info-label">Max neural heat: {{MaxNeuralHeat}}</label>
+                    {{/if}}
+                    
+                    <div class="action-row">
+                        {{#if inCombat}}
+                        <!--<i id="roll-inititative" class="gear-thing-action-icon fa-fw fas fa-dice-d20" data-tooltip="Roll Initaitive" data-tooltip-direction="RIGHT"></i>-->
+                        {{#if endTurnAllowed}}
+                        <i id="end-turn" class="gear-thing-action-icon fa-fw fas fa-arrows-up-to-line" data-tooltip="Push initative (end turn)" data-tooltip-direction="RIGHT"></i>
+                        <i id="wait-whole-turn" class="gear-thing-action-icon fa-fw fas fa-hourglass-end" data-tooltip="Wait for rest of remaining ticks" data-tooltip-direction="RIGHT"></i>
+                        <i id="wait-action" class="gear-thing-action-icon fa-fw fas fa-hourglass" data-tooltip="Wait 30 ticks" data-tooltip-direction="RIGHT"></i>
+                        <i id="wait-action-custom" class="gear-thing-action-icon fa-fw fas fa-hourglass-clock" data-tooltip="Wait the number of ticks entered in the box to the right" data-tooltip-direction="RIGHT"></i>
+                        {{else}}
+                        <i class="fa-fw fas fa-arrows-up-to-line" data-tooltip="Push initative (end turn)" data-tooltip-direction="RIGHT"></i>
+                        <i class="fa-fw fas fa-hourglass-end" data-tooltip="Wait for rest of remaining ticks" data-tooltip-direction="RIGHT"></i>
+                        <i class="fa-fw fas fa-hourglass" data-tooltip="Wait 30 ticks" data-tooltip-direction="RIGHT"></i>
+                        <i class="fa-fw fas fa-hourglass-clock" data-tooltip="Wait the number of ticks entered in the box to the right" data-tooltip-direction="RIGHT"></i>
+                        {{/if}}
+                        <input class="custom-tick-input" id="custom-ticks-input" type="number" max="360" min="1" value="{{../this.system.customTickDuration}}"  data-tooltip="Custom wait tick duration<br><br>Value must be 1-360" data-tooltip-direction="RIGHT"></input>
+                        {{/if}}
+                    </div>
+                </div>
+                <div class="vertical-container dynamic-stats" data-tooltip="This resets when your next turn begins." data-tooltip-direction="RIGHT">
+                    <label style="text-align:center;">Current turn</label>
+                    <label class="info-label" data-tooltip="You current body stance.<br><br>If you aren't mobile you can't do anything." data-tooltip-direction="RIGHT">Current stance: {{CurrentStance}}</label>
+                    <label class="info-label" data-tooltip="Starting initiative of the current round" data-tooltip-direction="RIGHT">Last initiative check: {{LastInitiative}}</label>
+                    <label class="info-label" data-tooltip="Up to the action accurate initiative score.<br><br>Once end turn is pressed, this becomes your new initiative score." data-tooltip-direction="RIGHT">Action adjusted initiative: {{ActionAdjustedInitiative}}</label>
+                    <label class="info-label" data-tooltip="Ticks you have left to spend this initaitive round to make actions with.<br><br>In some circumstances, the DM may allow you to go into negative ticks. For example if an action would put you under 10 ticks above max." data-tooltip-direction="RIGHT">Remaining ticks: {{{RemainingTurnTicks}}} ticks</label>
+                    <label class="info-label" data-tooltip="How far you can move if you spent all remaining ticks moving.<br>This value includes stagger duration." data-tooltip-direction="RIGHT">Remaining movement: {{PossibleMovement}} cells</label>
+                    {{#if AllowCompleteStance}}
+                    <button id="complete-stance">End busy stance</button>
+                    {{/if}}
+                    {{#if Staggering}}
+                    <label class="info-label" data-tooltip="While staggered, your movement speed is reduced by 1/6.<br>Stagger ticks down with any action, including movement." data-tooltip-direction="RIGHT">Stagger ticks: {{StaggerTicksRemaining}}</label>
+                    {{/if}}
+                </div>
+                <div class="vertical-container" style="flex-grow:1;">
+                    <label>Action History</label>
+                <div class="action-log">
+                    {{#if CombatActions}}
+                        {{#each CombatActions}}
+                            {{#if Retconable}}
+                            <div class="horizontal-container">
+                                <label>{{Label}} ({{Cost}}ticks)</label>
+                                <i class="combat-action gear-thing-action-icon fa-fw fas fa-xmark" data-index="{{@index}}" data-tooltip="Retcon" data-tooltip-direction="RIGHT"></i>
+                            </div>
+                            {{else}}
+                            <div class="horizontal-container">
+                                <label>{{Label}} ({{Cost}}ticks)</label>
+                                <i class="fa-fw fa-duotone fas fa-xmark" data-tooltip="Expired, cannot retcon" data-tooltip-direction="RIGHT"></i>
+                            </div>
+                            {{/if}}
+                        {{/each}}
+                    {{else}}
+                    <label>No actions available</label>
+                    {{/if}}
+                    
+                </div>
+                </div>
+            </div>
+        </div>
+        {{/with}}
+    </dev>
+</section>

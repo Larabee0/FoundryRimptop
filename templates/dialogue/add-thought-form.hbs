@@ -1,0 +1,18 @@
+<section class="tab standard-form pawn-actor-tab add-thought-form {{tabs.customThought.cssClass}}" data-tab="customThought" data-group="{{tabs.customThought.group}}">
+    <div class="thought-form-container">
+        <label class="add-thought-input">Label<input name="label-input" type="text"></input></label>
+        <label class="add-thought-input">Description (tooltip)<input name="desc-input" type="text"></input></label>
+        <label class="add-thought-input">Mood impact<input name="mood-input" type="number"></input></label>
+        <label class="add-thought-input">Duration (days)<input name="duration-input" type="number"></input></label>
+
+        {{#if otherPawns}}
+        <label class="add-thought-input">Other pawn
+        <select class="other-pawn-input" name="other-pawn">
+            {{selectOptions otherPawns selected=selectedPawn}}
+        </select>
+        </label>
+        {{/if}}
+
+        <button data-action="submit">Add</button>
+    </div>
+</section>

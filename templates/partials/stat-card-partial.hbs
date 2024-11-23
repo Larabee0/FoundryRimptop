@@ -1,0 +1,58 @@
+<div class="stat-card-container">
+    <div class="upper-area">
+        <div>
+            {{#if hideRefresh}}
+            <i class="data-refresh-icon stat-refresh-icon fa-fw fas fa-arrows-rotate" data-action="refreshStats" data-tooltip="Refresh stat data from RimWorld app"  data-tooltip-direction="RIGHT"></i>
+            {{/if}}
+            <label class="stat-card-title">{{{Title}}}</label>
+        </div>
+        
+        {{#if inHyperLink}}
+        <button class="back-button">Back</button>
+        {{/if}}
+    </div>
+    
+
+    <div class="lower-area">
+        <section class="stat-list">
+            <table id="list_table" class="table table-striped" href="{{defaultStatCategory}}-{{defaultStatIndex}}">
+                <tbody>
+                    {{#each Categories}}
+                    <tr class="stat-category-container item-row">
+                        <td class="stat-category-label-td stat-td">
+                            <label class="stat-category-label stat-item">{{this}}</label>
+                        </td>
+                        <td class="stat-category-Value stat-td">
+                        </td>
+                    </tr>
+
+                        {{#each (lookup ../StatsInCategories this)}}
+                        <tr class="stat-item-container item-row" data-category="{{../this}}" data-stat-index="{{@index}}" data-tooltip="{{this.Tooltip}}" data-tooltip-direction="RIGHT">
+                            <td class="stat-label-td stat-td">
+                                <label class="stat-label">{{this.Label}}</label>
+                            </td>
+                            <td class="stat-value-td stat-td">
+                                <label class="stat-value">{{this.Value}}</label>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    {{/each}}
+                </tbody>
+            </table>
+            <label class="stat-card-search-label">Search <input type="text" id="filter_field" name="filter_field"></label>
+        </section>
+        <section class="details-area">
+            {{#with (lookup (lookup ./StatsInCategories defaultStatCategory) defaultStatIndex)}}
+            <p class="description-paragraph">{{{lookup this "Explanation"}}}</p>
+            {{#if Rollable}}
+            <button class="rollable-stat-button" data-def-name="{{StatDefName}}">Roll</button>
+            {{/if}}
+            <ul>
+                {{#each this.HyperlinkDisplay}}
+                <li data-hyplink-index="{{@index}}" class="hyperlink-label">{{this}}</li>
+                {{/each}}
+            </ul>
+            {{/with}}
+        </section>
+    </div>
+</div>

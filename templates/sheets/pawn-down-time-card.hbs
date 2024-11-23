@@ -1,0 +1,40 @@
+<section class="tab standard-form pawn-actor-tab pawn-down-time-card {{tabs.downTimeCard.cssClass}}" data-tab="downTimeCard" data-group="{{tabs.downTimeCard.group}}">
+    <div class="down-time-container">
+        <div class="upper-area">
+            <i class="data-refresh-icon down-time-refresh-icon fa-fw fas fa-arrows-rotate" data-action="refreshDownTime" data-tooltip="Refresh all down time data from RimWorld app"  data-tooltip-direction="LEFT"></i>
+            <label class="down-time-card-title">Down time</label>
+        </div>
+        <div class="main-area">
+            <div class="columns">
+                {{#with system.downTimeCard}}
+                <div class="activity-container">
+                    <label class="activity-title">General activities</label>
+                    {{#each Activities}}
+                    {{>"systems/rimtop/templates/partials/down-time-activity-partial.hbs" this}}
+                    {{/each}}
+                </div>
+                <div class="current-activity-container">
+                    <div class="extra-settings">
+                        <label class="activity-title">General settings</label>
+                        {{#if ../isGM}}
+                        <label class="extra-input"><input class="misc-setting" id="virtually-spawned" type="checkbox" {{checked VirtuallySpawned}}></input>Full tick when world pawn</label>
+                        {{/if}}
+                        <label class="extra-input"><input class="misc-setting" id="disable-down-time" type="checkbox" {{checked DisableDownTime}}></input>Disable down time</label>
+                        <label class="extra-input"><input class="misc-setting" style="width:50px; margin:3px 5px 3px 5px;" id="rest-effectiveness" type="number" value="{{RestEffectiveness}}"></input>Rest effectiveness %</label>
+                        <label class="extra-input"><input class="misc-setting" id="always-rest" type="checkbox" {{checked AlwaysRest}}></input>Always rest when injured or sick</label>
+                        <button class="extra-input" id="inter-pawn-tending-button">Inter pawn tending options</button>
+                    </div>
+                    <div class="current-activity">
+                        <label class="activity-title">Current activity</label>
+                        {{#if CurrentActivity}}
+                        <label class="current-activity-label">{{{CurrentActivity}}}</label>
+                        {{else}}
+                        <label class="current-activity-label">No activity</label>
+                        {{/if}}
+                    </div>
+                </div>
+                {{/with}}
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,20 @@
+<div class="gear-thing-item">
+    <div class="gear-thing-info-row" data-tooltip="{{Tooltip}}" data-tooltip-direction="RIGHT">
+        <label class="gear-thing-label">{{Label}}</label>
+        <label class="gear-thing-mass-label"><span style="color:#{{MassColor}}">{{Mass}}</span></label>
+    </div>
+    <div class="gear-thing-action-row">
+        {{#if EquippableNow}}
+        <i data-thingId="{{ThingId}}" class="thing-equip gear-thing-action-icon fa-fw fas fa-screwdriver-wrench" data-tooltip="Equip" data-tooltip-direction="RIGHT"></i>
+        {{/if}}
+        {{#if WearableNow}}
+        <i data-thingId="{{ThingId}}" class="thing-wear gear-thing-action-icon fa-fw fas fa-shirt" data-tooltip="Wear apparel" data-tooltip-direction="RIGHT"></i>
+        {{/if}}
+        {{#if ConsumeIngestible}}
+        <i data-thingId="{{ThingId}}" class="thing-ingest gear-thing-action-icon fa-fw fas fa-bowl-chopsticks-noodles" data-tooltip="{{ConsumeIngestible}}" data-tooltip-direction="RIGHT"></i>
+        {{/if}}
+        <i data-thingId="{{ThingId}}" class="thing-drop gear-thing-action-icon fa-fw fas fa-arrow-down-from-bracket" data-tooltip="{{DropTooltip}}" data-tooltip-direction="RIGHT"></i>
+        <i data-thingId="{{ThingId}}" class="thing-info gear-thing-action-icon fa-fw fas fa-square-info" data-tooltip="View information." data-tooltip-direction="RIGHT"></i>
+        <i data-thingId="{{ThingId}}" class="thing-multi-action gear-thing-action-icon fa-fw fas fa-ellipsis" data-tooltip="More" data-tooltip-direction="RIGHT"></i>
+    </div>
+</div>

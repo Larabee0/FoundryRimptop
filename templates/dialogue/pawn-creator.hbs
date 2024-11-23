@@ -1,0 +1,111 @@
+<div class="container">
+    <div class="upper-area">
+        <div>
+
+        </div>
+    </div>
+    <div class="lower-area">
+        <div class="left-area" data-tooltip="Click item to select"  data-tooltip-direction="RIGHT">
+            <label class="kinds-label" data-tooltip="All(Most) pawn kinds you can create"  data-tooltip-direction="RIGHT">Pawn Kinds</label>
+            
+            <label class="left-row-item"><input placeholder="Search" type="text" id="filter_field" name="filter_field"></label>
+            <section class="pawn-kinds-list">
+                <table id="list-table" class="table stable-striped">
+                    <tbody>
+                        {{#each kindDefs}}
+                            <tr class="item-row" data-kind-def="{{this.DefName}}">
+                                <td class="item=container" data-tooltip="{{this.RaceName}}" data-tooltip-direction="RIGHT">
+                                    <a class="item-action" data-action="selectKind">
+                                        <label>{{this.DisplayName}}</label>
+                                    </a>
+                                </td>
+                            </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </section>
+
+        </div>
+        <div class="middle-area">
+            <div style="display:flex; flex-direction:column" data-tooltip="Information about the selected race"  data-tooltip-direction="RIGHT">
+                {{#unless selectKindDef}}
+                <label class="description-title-label">Select pawn kind</label>
+                {{/unless}}
+                {{#if selectKindDef}}
+                {{#with (lookup ./kindDefs [selectKindDef])}}
+                <label class="description-title-label">Race description: {{this.RaceName}}</label>
+                <section class="race-description-container">
+                    <label class="description-label">{{this.RaceDescription}}</label>
+                </section>
+                {{/with}}
+                {{/if}}
+            </div>
+        </div>
+        <div class="right-area">
+            {{#if selectKindDef}}
+            <div class="right-row-item" data-tooltip="Fixed last name of the pawn<br><br> this can be changed later in the bio editor"  data-tooltip-direction="RIGHT">
+                <input id="fixed-last-name" placeholder="Unset" class="name-input" type="text" value="{{fixedLastName}}">
+                <label>Fixed last name</label>
+            </div>
+            <div class="right-row-item" data-tooltip="Gender Options<br>Only available to races with gender<br><br>Random mode picks between Male and Female<br>Gender can be manually set later in the bio editor"  data-tooltip-direction="RIGHT">
+                <select class="name-input" name="gender-options">
+                    {{selectOptions genderOptions selected=genderMode}}
+                </select>
+                <label>Gender</label>
+            </div>
+            <div class="right-row-item" data-tooltip="Age mode<br><br>Random - a random age will be generated<br><br>Range - a clamped age between the two given values will be generated, invalid inputs fall back to random age mode<br><br>Fixed - The age entered will be clamped and set as the pawns biological age, invalid inputs fallback to random age mode"  data-tooltip-direction="RIGHT">
+                <select class="name-input" name="age_options">
+                    {{selectOptions ageOptions selected=ageMode}}
+                </select>
+                <label>Biological age mode</label>
+            </div>
+            {{#ifEquals ageMode "1"}}
+            <div class="right-row-item" data-tooltip="A biological age will be picked<br>This is the min"  data-tooltip-direction="RIGHT">
+                <input id="bio-age-range-min" placeholder="-" class="number-input-with-checkbox" type="number" maxLength="4" minlength="2" value="{{bioMin}}"> 
+                <label>Min biological age</label>
+            </div>
+            <div class="right-row-item" data-tooltip="A biological age will be picked<br>This is the max"  data-tooltip-direction="RIGHT">
+                <input id="bio-age-range-max" placeholder="-" class="number-input-with-checkbox" type="number" maxLength="4" minlength="2" value="{{bioMax}}">
+                <label>Max biological age</label>
+            </div>
+            {{/ifEquals}}
+            {{#ifEquals ageMode "2"}}
+            <div class="right-row-item" data-tooltip="This biological age will be forced"  data-tooltip-direction="RIGHT">
+                <input id="fixed-bio-age" placeholder="-" class="number-input-with-checkbox" type="number" maxLength="4" minlength="2" value="{{fixedBio}}">
+                <label>Fixed Biological age</label>
+            </div>
+            {{/ifEquals}}
+            <div class="right-row-item" data-tooltip="Optional fixed chronological age<br><br>If this is enabled and the value is less than a fixed biological age, it will be set equal to fixed biological age<br><br>If this is enabled and the value is less than the max of biological age range, it is set equal to the max<br><br>Invalid values are not entered into the generation request."  data-tooltip-direction="RIGHT">
+                <div style="display:flex; flex-direction:row; width:50%;">
+                    <input id="allow-fixed-chron-age" type="checkbox" {{checked chronoAllowed}}>
+                    <input id="fixed-chron-age" placeholder="-" class="number-input-with-checkbox" type="number" maxLength="4" minlength="2" value="{{fixedChrono}}">
+                </div>                
+                <label>Fixed chronological age</label>
+            </div>
+            <div class="right-row-item" data-tooltip="Allow this pawn to be generated with potential drug addictions"  data-tooltip-direction="RIGHT">
+                <input id="allow-addictions" type="checkbox" {{checked addictions}}>
+                <label>Allow addictions</label>
+            </div>
+            <div class="right-row-item" data-tooltip="This pawn has been in cryptosleep so will be generated with cryptosleep sickness"  data-tooltip-direction="RIGHT">
+                <input id="cryptosleep" type="checkbox" {{checked cryptosleep}}>
+                <label>Certainly been in cryptosleep</label>
+            </div>
+            <div class="right-row-item" data-tooltip="Potentially add a sexuality trait<br><br>No sexuality trait implies a straight pawn"  data-tooltip-direction="RIGHT">
+                <input id="allow-gay" type="checkbox"  {{checked gay}}>
+                <label>Allow queer trait generation</label>
+            </div>
+            {{#if isGM}}
+            <div class="right-row-item" data-tooltip="Allows generation of a downed pawn"  data-tooltip-direction="RIGHT">
+                <input id="allow-downed" type="checkbox" {{checked downed}}>
+                <label>Allow downed</label>
+            </div>
+            <div class="right-row-item" data-tooltip="Generates a pawn then kills it" data-tooltip-direction="RIGHT">
+                <input id="force-dead" type="checkbox" {{checked dead}}>
+                <label>Force dead</label>
+            </div>
+            {{/if}}        
+            <button data-action="submit" data-tooltip="Create the selected pawn kind"  data-tooltip-direction="RIGHT">Create pawn</button>
+            {{/if}}
+        </div>
+    </div>
+</div>

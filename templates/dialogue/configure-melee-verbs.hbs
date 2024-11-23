@@ -1,0 +1,23 @@
+<div class="container">
+    <label>
+        Set what melee verbs can be selected by a pawn.
+        <br>
+        <br>
+        The selection of melee verbs is heavily biased to the best verb (highest DPS), so much so that wielding any melee weapon will
+        make the chance of using some/all natural verbs zero or nearly zero, depending on the race.
+        <br>
+        <br>
+        If this configuration leads to no verbs being selected, it falls back to using only natural verbs, is a pawn is guarateed to have these always available.
+        <br>
+        </label>
+    <label data-tooltip="Natural verbs are verbs provided by the pawn's race (fists, teeth, head)" data-tooltip-direction="RIGHT">
+        <input id="natural-verbs" type="checkbox" {{checked Natural}}></input>Allow natural verbs in selection</label>
+    <label data-tooltip="Equipment verbs are verbs provided by the pawn's main equipment (longsword, knife, butt of a rifle)" data-tooltip-direction="RIGHT">
+        <input id="equipment-verbs" type="checkbox" {{checked Equipment}}></input>Allow Equipment verbs in selection</label>
+    <label data-tooltip="Apparel verbs are verbs provided by any of the pawn's apparel" data-tooltip-direction="RIGHT">
+        <input id="apparel-verbs" type="checkbox" {{checked Apparel}}></input>Allow Apparel verbs in selection</label>
+    <label data-tooltip="Hediff verbs are verbs provided by any additional parts add to the pawn (bionic fist, power claw, venom fangs)" data-tooltip-direction="RIGHT">
+        <input id="hediff-verbs" type="checkbox" {{checked Hediff}}>
+    </input>Allow hediff verbs in selection</label>
+    <button data-action="submit">Confirm</button>
+</div>
