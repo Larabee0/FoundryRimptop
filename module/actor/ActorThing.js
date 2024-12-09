@@ -150,7 +150,7 @@ export class ActorThing extends Actor {
 
     async updateOperationsBills(){
         if(this.type==="pawn"){
-            let updates = this.genUpdateHediffList(await CONFIG.csInterOP.GetPawnMedicalBills(this.system.thingID));
+            let updates = this.genUpdateOperationsBills(await CONFIG.csInterOP.GetPawnMedicalBills(this.system.thingID));
             await this.update(updates);
         }
     }
