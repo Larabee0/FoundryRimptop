@@ -122,7 +122,7 @@ export class ActorThing extends Actor {
 
     async updateHealthSummary(){
         if(this.type==="pawn"){
-            let updates = {"system.healthSummary":this.genUpdateHealthSummary(await CONFIG.csInterOP.GetPawnHealthSummary(this.system.thingID))};
+            let updates = this.genUpdateHealthSummary(await CONFIG.csInterOP.GetPawnHealthSummary(this.system.thingID));
             
             updates["system.statCard"]= JSON.parse( await CONFIG.csInterOP.GetThingStatCard(this.system.thingID));
             let curHp = updates["system.statCard"].Hp;
