@@ -69,7 +69,7 @@ export class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2){
         let actor = this.actor;
         context.system = structuredClone(actor.system);
 
-        if(actor.type ==="thing"){
+        if(actor.type === "thing"){
             context.thingExists = context.system.thingID !=="uncreatedThing" 
         }
 
@@ -87,8 +87,19 @@ export class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2){
     // opens the thing creator window automatically if this sheet represents an uncreated thing.
     _onFirstRender(context,options){
         super._onFirstRender(context,options);
+        
+        let sheetClass = this.actor.getFlag("core","sheetClass");
+
+        if(this.actor.type === "thing"  && sheetClass !== "rimtop.BaseActorSheet"){
+            this.actor.setFlag("core","sheetClass","rimtop.BaseActorSheet");
+        }
+        else if(this.actor.type === "pawn"  && sheetClass !== "rimtop.PawnActorSheet"){
+            this.actor.setFlag("core","sheetClass","rimtop.PawnActorSheet");
+        }
+
         if(this.actor.type === "thing" && this.actor.system.thingID ==="uncreatedThing"){
             this.actor.openCreateItemDialogue();
+            
         }
     }
 
