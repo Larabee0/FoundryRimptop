@@ -62,7 +62,7 @@
             <i class="fas fa-list-check"></i>
         </div>
         
-        
+        {{#if showCover}}
         <div class="control-icon {{hasCover}}" data-action="toggle-cover-controls" data-tooltip="Cover settings">
             <i class="fas fa-user-shield"></i>
         </div>
@@ -84,7 +84,8 @@
                 <i class="fas fa-shield"></i>
             </div>
         </div>
-        
+        {{/if}}
+
         <div class="status-effects {{showTokenControls}}" style="grid-template-columns: repeat(2, 50px); width:fit-content; padding-left:8px;">
         
             <div class="control-icon {{targetClass}}" data-action="target" data-tooltip="HUD.ToggleTargetState" style="margin-top:8px;margin-bottom:8px;">

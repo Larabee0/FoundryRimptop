@@ -2,14 +2,15 @@
     <label>{{thingContext.Label}}</label>
     {{#if selectAction}}
     <div class="action-selector">
-        {{#with thingContext}}
-        {{#if CanDropOnMap}}
-        <button class="more-menu-button" data-action="sendToScene">Drop on current scene</button>
-        {{/if}}
-        {{#unless HeldByWorld}}
-        <button class="more-menu-button" data-action="sendToWorld">Send to world inventory</button>
-        {{/unless}}
-        <button class="more-menu-button" data-action="selectPawn">Send to pawn</button>
+        <div class="transfer-area">
+            <label>Transfer Count: {{transferCount}} <input id="amount-slider" type="range" min="1" max="{{thingContext.StackCount}}" value="{{transferCount}}" step="1"></input></label>
+            {{#with thingContext}}
+            <button class="more-menu-button" data-action="sendToScene">Send to current scene</button>
+            {{#unless HeldByWorld}}
+            <button class="more-menu-button" data-action="sendToWorld">Send to world inventory</button>
+            {{/unless}}
+            <button class="more-menu-button" data-action="selectPawn">Send to pawn</button>
+        </div>
         {{#if Spawned}}
         <button class="more-menu-button" data-action="despawn">Despawn</button>
         {{/if}}

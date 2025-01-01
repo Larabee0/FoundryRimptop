@@ -73,6 +73,12 @@ Number.prototype.scientificToDecimal = function(){
     return str;
 }
 
+String.prototype.removeCharAt = function (i) {
+    var tmp = this.split(''); // convert to an array
+    tmp.splice(i , 1); // remove 1 element from the array (adjusting for non-zero-indexed counts)
+    return tmp.join(''); // reconstruct the string
+}
+
 async function preloadHandleBarsTemplates(){
     const templatePaths =[
         "systems/rimtop/templates/partials/search-partial.hbs",

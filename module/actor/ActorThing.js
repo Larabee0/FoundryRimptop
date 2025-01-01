@@ -286,6 +286,10 @@ export class ActorThing extends Actor {
     }
 
     async _preDelete(options,user){
+        var dependentTokens = this.getDependentTokens();
+        for(var i = 0; i < dependentTokens.length; i++){
+            await dependentTokens[i].delete({deleteActor: true});
+        }
         let preDelete = super._preDelete(options,user);
         if(game.user._id===user.id){
             //console.log("Editor client!");
@@ -361,12 +365,27 @@ export class ActorThing extends Actor {
             if(newValue){
                 // spawn status has changed and is now spawned, spawn the token in rimworld
                 this.spawnOnMap(linkedTokens[0]);
+                if(this.type === "thing"){
+                    var curFolder = this.folder;
+                    
+                    var sceneFolder = CONFIG.csInterOP.GetSceneFolder(linkedTokens[0].parent);
+                    if(curFolder._id !== sceneFolder._id){
+                        await this.update({folder:sceneFolder});
+                    }
+                }
                 //console.log("spawning token (SC) ",linkedTokens[0]._id);
                 return;
             }
             else{
                 // spawn status has changed and is now despawned, ensure we are despawned in rimworld.
-                this.despawn();
+                await this.despawn();
+                if(this.type === "thing"){
+                    var curFolder = this.folder;
+                    var worldInv = CONFIG.csInterOP.GetWorldInventoryFolder();
+                    if(curFolder._id !== worldInv._id){
+                        await this.update({folder:worldInv});
+                    }
+                }
                 //console.log("Ensuring despawned (SC)");
                 return;
             }

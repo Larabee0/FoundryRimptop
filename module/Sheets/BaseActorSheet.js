@@ -90,13 +90,35 @@ export class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2){
         
         let sheetClass = this.actor.getFlag("core","sheetClass");
 
-        if(this.actor.type === "thing"  && sheetClass !== "rimtop.BaseActorSheet"){
-            this.actor.setFlag("core","sheetClass","rimtop.BaseActorSheet");
-        }
-        else if(this.actor.type === "pawn"  && sheetClass !== "rimtop.PawnActorSheet"){
-            this.actor.setFlag("core","sheetClass","rimtop.PawnActorSheet");
-        }
+        if(this.actor.type === "thing"){
 
+            if(sheetClass !== "rimtop.BaseActorSheet"){
+                this.actor.setFlag("core","sheetClass","rimtop.BaseActorSheet");
+            }
+
+            if(this.actor.folder == null){
+                var worldInvFolder = CONFIG.csInterOP.GetWorldInventoryFolder();
+                if(worldInvFolder != null){
+                    game.folders._expanded[worldInvFolder.uuid] = true;
+                    this.actor.update({folder: worldInvFolder});
+                }
+
+            }
+        }
+        else if(this.actor.type === "pawn"){
+            
+            if(sheetClass !== "rimtop.PawnActorSheet"){
+                this.actor.setFlag("core","sheetClass","rimtop.PawnActorSheet");
+            }
+            
+            if(this.actor.folder == null){
+                var pawnFolder = CONFIG.csInterOP.GetPawnsFolder();
+                if(pawnFolder != null){
+                    game.folders._expanded[pawnFolder.uuid] = true;
+                    this.actor.update({folder: pawnFolder});
+                }
+            }
+        }
         if(this.actor.type === "thing" && this.actor.system.thingID ==="uncreatedThing"){
             this.actor.openCreateItemDialogue();
             

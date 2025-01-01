@@ -19,6 +19,7 @@ eventSource;
         Hooks.once("ready",async ()=>{
             console.log(url);
             if(game.users.activeGM?.isSelf){
+                await this.ensureFileSystem();
                 Hooks.on("rimAppConn",async ()=>
                 {
                     await this.SyncAllDataToRimWorldApp();
@@ -29,7 +30,9 @@ eventSource;
                 
                 Hooks.on("createScene",async (document)=>{
                     console.log("createScene");
-                    
+                    var sceneFolderId = await this.createActorFolder("Scene: "+document.name);
+                    console.log(sceneFolderId._id);
+                    document.setFlag("rimtop","sceneFolder",sceneFolderId._id);
                     let scenesForRW=[];
                     
                     let scene = document;
@@ -47,7 +50,14 @@ eventSource;
                 });
                 Hooks.on("updateScene",async (document,changed)=>{
                     console.log("updateScene");
-
+                    
+                    if("name" in changed){
+                        var folder = this.GetSceneFolder(scene);
+                        await folder.update({name: ("Scene: "+document.name)});
+                        // console.log(folderId);
+                        console.log(game.actors.folders.get(folderId));
+                    }
+                    
                     if(changed.height || changed.width){
                         let scenesForRW=[];
                     
@@ -64,9 +74,10 @@ eventSource;
                     console.log(response);
                     }
                 });
-                Hooks.on("deleteScene",async (document)=>{
+                Hooks.on("deleteScene",async (scene)=>{
                     console.log("deleteScene");
-                    let scene = document;
+                    var folder = this.GetSceneFolder(scene);
+                    await folder.delete({deleteSubfolders: true, deleteContents: true});
                     await this.DeleteMap(scene._id);
                 });
                 Hooks.on("canvasReady",async ()=>{
@@ -88,6 +99,121 @@ eventSource;
             }
         });
         
+    }
+
+    async ensureFileSystem(){
+        var actorFolders = Array.from(game.actors.folders);
+
+        const pawnFolder = "Pawns";
+        const worldInventoryFolder = "World Inventory";
+
+        var hasPawnFolder = false;
+        var hasWorldInvFolder = false;
+
+        var duplicateFolders = [];
+
+        for(var i = 0; i < actorFolders.length; i++){
+            var folderName = actorFolders[i].name;
+            console.log(actorFolders[i]);
+            if(folderName === pawnFolder){
+                if(hasPawnFolder){
+                    duplicateFolders.push(actorFolders[i].id);
+                }
+                hasPawnFolder = true;
+            }
+            else if(folderName === worldInventoryFolder){
+                if(hasWorldInvFolder){
+                    duplicateFolders.push(actorFolders[i].id);
+                }
+                hasWorldInvFolder = true;
+            }
+        }
+
+        if(!hasPawnFolder){
+            await this.createActorFolder(pawnFolder);
+        }
+
+        if(!hasWorldInvFolder){
+            await this.createActorFolder(worldInventoryFolder);
+        }
+
+        //game.folders.createDocument()
+    }
+
+    async createToken(actor, scene, x, y){
+        var originalscene;
+        if(game.canvas.scene.id != scene.id){
+            originalscene = game.canvas.scene;
+            scene = await scene.activate();
+        }
+        var canvas = game.canvas;
+        var tokenLayer = canvas.getCollectionLayer("tokens");
+        const td = await actor.getTokenDocument({
+            hidden: false,
+            sort: Math.max(tokenLayer.getMaxSort() + 1, 0)
+          }, {parent: canvas.scene});
+
+        let position = {x: x, y: y};
+        await td.updateSource(position);
+        if ( !canvas.dimensions.rect.contains(td.x, td.y) ) return false;
+        tokenLayer.activate();
+        var token =await td.constructor.create(td, {parent: canvas.scene});
+        
+        await token.update({actorLink: true});
+        console.log(token);
+        if(originalscene){
+            await originalscene.activate();
+        }
+        else{
+            canvas.pan(x,y);
+
+        }
+        return token;
+    }
+
+    async createActorFolder(name){
+        var folderData = {
+            name: name,
+            type: "Actor"
+        };
+        var context ={
+            parent: null,
+            pack: "",
+            strict: false
+        };
+        var folder = await Folder.create(folderData,context);
+        await game.actors.createDocument(folderData,context);
+        return folder;
+    }
+
+    GetActorFolderById(id){
+        return game.actors.folders.get(id);
+    }
+
+    GetActorFolderByName(name){
+        var actorFolders = Array.from(game.actors.folders);
+        for(var i = 0; i < actorFolders.length; i++){
+            if(actorFolders[i].name === name){
+                return actorFolders[i];
+            }
+        }
+
+        return null;
+    }
+
+    GetSceneFolder(scene){
+        var folderId = scene.getFlag("rimtop","sceneFolder");
+        return this.GetActorFolderById(folderId);
+    }
+
+    GetPawnsFolder(){
+        const pawnFolder = "Pawns";
+        return this.GetActorFolderByName(pawnFolder);
+    }
+
+    GetWorldInventoryFolder(){        
+        const worldInventoryFolder = "World Inventory";
+        return this.GetActorFolderByName(worldInventoryFolder);
     }
 
     GetAllThingDefs(){
@@ -202,6 +328,18 @@ eventSource;
             Http.onabort=reject;
             Http.send();
         });
+    }
+
+    GetActorByThingId(thingId){
+        let existingActors = this.getAllActors();
+        
+        for (let i = 0; i < existingActors.length; i++){
+            let existingActor = existingActors[i];
+            if(existingActor.system.thingID ===thingId){
+                return existingActor._id;
+            }
+        }
+        return null;
     }
 
     async SyncAllDataToRimWorldApp(){
@@ -377,6 +515,76 @@ eventSource;
     }
 
 
+    async createActorThingRaw(thingData,img,folder){
+        var actor = await ActorThing.create({
+            name: thingData.Label,
+            type: thingData.Pawn ? "pawn":"thing",
+            img: img,
+            folder: folder
+        });
+        actor.setThingId(thingData.ThingId);
+        actor.setThingDef(thingData.ThingDef);
+        
+        console.log("Created new Actor ",thingData.Label, " for ThingDef: ",thingData.ThingDef," Thing Id: ",thingData.ThingId);
+        return actor;
+    }
+
+    async createActorThing(thingData){
+        if(thingData.Pawn){
+            return await this.createActorThingRaw(thingData,"icons/svg/mystery-man.svg",this.GetPawnsFolder());
+        }
+        else{
+
+            return await this.createActorThingRaw(thingData,"icons/svg/item-bag.svg",this.GetWorldInventoryFolder());
+        }
+    }
+
+    async handleDroppedThing(thingDropResult, allowSpawn = true){
+        console.log(thingDropResult);
+        if(!thingDropResult.Success){
+            return null;
+        }
+
+        if(thingDropResult.SentToWorld){
+            return await this.createActorThing(thingDropResult.ThingData);
+        }
+        else if(thingDropResult.SentToMap){
+            var scene = game.scenes.get(thingDropResult.MapFoundryId);
+            if(scene){
+                var folderId = scene.getFlag("rimtop","sceneFolder");
+                var folder = this.GetActorFolderById(folderId);
+                var actor;
+                if(folder){
+                    actor = await this.createActorThingRaw(thingDropResult.ThingData,thingDropResult.ThingData.Pawn ? "icons/svg/mystery-man.svg": "icons/svg/item-bag.svg",folder);
+                    if(allowSpawn){
+                        var scenePos = this.convertFromRimWorldCoordinates(scene,thingDropResult.X,thingDropResult.Y);
+                        await this.createToken(actor, scene, scenePos[0], scenePos[1]);
+                    }
+                }
+                else{
+                    actor = await this.createActorThing(thingDropResult.ThingData);
+                    console.warn("Actor should go to scene folder but couldn't find the folder for",scene.name, ",sent it to default folder for actor type", scene);
+                }
+                return actor;
+            }
+            else{
+                var actor = await this.createActorThing(thingDropResult.ThingData);
+                console.warn("Actor", actor._id,"should go to scene folder but couldn't find scene",thingDropResult.MapFoundryId, ",sent it to world instead");
+                await CONFIG.csInterOP.SendHttpRequest("POST","sendToWorldDirect",thingDropResult.ThingData.ThingId);
+                return actor;
+            }
+        }
+    }
+
+    convertFromRimWorldCoordinates(scene,x, y){
+        let curDimensions = scene.dimensions;
+        let squareSize = Math.floor(curDimensions.distancePixels);
+        y = Math.abs(y + 1 - Math.floor(curDimensions.rows));
+        y = y * squareSize;
+        x = x * squareSize;
+        return [x, y];
+    }
+
     async validateActors(existingActors){
         console.log("Validating Actors...");
         let allThings = JSON.parse(await this.SendHttpRequest("GET","getAllThings"));
@@ -451,15 +659,7 @@ eventSource;
             let missingActorData = JSON.parse(await this.GetMissingActorData(JSON.stringify(missingActors)));
             console.log(String(missingActorData.length)," missing actors");
             for(let i = 0; i< missingActorData.length; i++){
-                let thingData = missingActorData[i];
-                let actor = await ActorThing.create({
-                    name: thingData.Label,
-                    type: "pawn",
-                    img: "icons/svg/mystery-man.svg"
-                });
-                actor.setThingId(thingData.ThingId);
-                actor.setThingDef(thingData.ThingDef);
-                console.log("Created new Actor ",thingData.Label, " for ThingDef: ",thingData.ThingDef," Thing Id: ",thingData.ThingId);
+                await this.createActorThing(missingActorData[i]);
             }
         }
         console.log("Validated all Actors and Things successfully.")

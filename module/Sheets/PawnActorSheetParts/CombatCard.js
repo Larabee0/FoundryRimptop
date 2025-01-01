@@ -239,7 +239,7 @@ export class CombatCard{
     }
 
     async DropThingInventory(pawnId, thingId){
-        await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",pawnId,thingId);
+        await CONFIG.csInterOP.handleDroppedThing(JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",pawnId,thingId)));
         await this.internalRefresh();
     }
 

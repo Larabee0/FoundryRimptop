@@ -15,17 +15,22 @@ export class BaseTokenHUD extends TokenHUD{
     const token = this.object;
     let showUpdateInitative= false;
     let cover = 0;
+    let actor = game.actors.get(token.document.actorId);
+    let showCover = true;
+    if(actor.type === "thing"){
+      showCover = false;
+    }
 
     if(this.document.actorLink){
-      let actor = game.actors.get(token.document.actorId);
       console.log(actor);
-      if("Cover" in actor.system.combatCard){
+      if("combatCard" in actor.system && "Cover" in actor.system.combatCard){
         cover = actor.system.combatCard.Cover;
       }
       showUpdateInitative = actor.inCombat && actor.isCurrentTurn();
     }
 
     data = foundry.utils.mergeObject(data,{
+      showCover: showCover,
       spawnClass: this.document.actorLink ? "active" : "",
       showTokenControls: this.tokenControlsAction ? "active" : "",
       showCoverControls: this.showCover ? "active" : "",

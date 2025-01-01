@@ -10,10 +10,10 @@ export class BaseToken extends TokenDocument{
         
     }
 
-    _onCreate(data,options,userId){
-        super._onCreate(data,options,userId);
+    _onCreate(data, options, userId){
+        super._onCreate(data, options, userId);
         
-        if(game.user._id===userId){
+        if(game.user._id === userId){
             //console.log("Editor client!");
             if(data.actorLink){
                 this.update({actorLink: false});
@@ -21,25 +21,29 @@ export class BaseToken extends TokenDocument{
         }
     }
 
-    async _onDelete(options,userId){
-        super._onDelete(options,userId)
-        
-        if(game.user._id===userId){
+    async _onDelete(options, userId){
+        super._onDelete(options, userId)
+        if("deleteActor" in options){
+            return;
+        }
+        if(game.user._id === userId){
             //console.log("Editor client!");
+            let actor = game.actors.get(this.actorId);
             if(this.actorLink){
-                let actor = game.actors.get(this.actorId);
+                actor = game.actors.get(this.actorId);
                 actor.setSpawned(false);
             }
+            
         }
     }
 
-    async _preUpdate(changed,options,userId){
+    async _preUpdate(changed, options, userId){
         
-        if(game.user._id===userId){
+        if(game.user._id === userId){
             //console.log("Editor client!");
 
             let actor = game.actors.get(this.actorId);
-            if(actor.system.thingID !=="uncreatedThing"){
+            if(actor.system.thingID !== "uncreatedThing"){
 
                 actor._registerDependentToken(this);
                 
@@ -59,17 +63,17 @@ export class BaseToken extends TokenDocument{
         actor._registerDependentToken(this);
     }
 
-    async _onUpdate(changed,options,userId){
-        super._onUpdate(changed,options,userId);
+    async _onUpdate(changed, options, userId){
+        super._onUpdate(changed, options, userId);
         
-        if(game.user._id===userId){
+        if(game.user._id === userId){
             //console.log("Editor client!");
             //console.log("customTokenUpdate");
             //console.log(changed);
             let actor = game.actors.get(this.actorId);
             actor._registerDependentToken(this);
 
-
+            console.log(actor);
             // guard against token linking to uncreated things.
             if(actor.system.thingID === "uncreatedThing"){
                 if("actorLink" in changed && changed.actorLink){
@@ -77,14 +81,14 @@ export class BaseToken extends TokenDocument{
                 }                
                 return;
             }
-
-            if(!("preventSync" in changed)&&("y" in changed || "x" in changed)){
+            
+            if(!("preventSync" in changed) && ("y" in changed || "x" in changed)){
                 if(this.actorLink){
 
                     let newX = changed.x ? changed.x : this.x;
                     let newY = changed.y ? changed.y : this.y;
 
-                    let position = this.convertToRimWorldCoordindates(newX,newY);
+                    let position = this.convertToRimWorldCoordindates(newX, newY);
                     let moveReq ={
                         ThingId: actor.system.thingID,
                         X: position[0],
@@ -92,7 +96,7 @@ export class BaseToken extends TokenDocument{
                     }
 
                     let newPos =JSON.parse(await CONFIG.csInterOP.SetPosition(JSON.stringify(moveReq)));
-                    this.SetPosition(newPos.X,newPos.Y);
+                    await this.SetPosition(newPos.X,newPos.Y);
                 }
             }
 
@@ -112,8 +116,8 @@ export class BaseToken extends TokenDocument{
         let ourPos = this.getRimworldCoordinates();
         let targetPos = token.getRimworldCoordinates();
 
-        for(let x = ourPos[0] - 1; x < ourPos[0]+1; x++){
-            for(let y = ourPos[1]-1;y<ourPos[1]+2;y++){
+        for(let x = ourPos[0] - 1; x < ourPos[0] + 1; x++){
+            for(let y = ourPos[1] - 1; y < ourPos[1] + 2; y++){
                 if(x === targetPos[0] && y === targetPos[1])    {
                     return true;
                 }
@@ -124,7 +128,7 @@ export class BaseToken extends TokenDocument{
     }
 
     getRimworldCoordinates(){
-        return this.convertToRimWorldCoordindates(this.x,this.y);
+        return this.convertToRimWorldCoordindates(this.x, this.y);
     }
 
     convertToRimWorldCoordindates(x,y){
@@ -132,7 +136,7 @@ export class BaseToken extends TokenDocument{
         x = Math.floor(x);
         y = Math.floor(y);
 
-        let curDimensions =game.scenes.viewed.dimensions;
+        let curDimensions = this.parent.dimensions;
         let squareSize = Math.floor(curDimensions.distancePixels);
         x = x / squareSize;
         y = Math.floor(curDimensions.rows) - 1 - (y / squareSize);
@@ -143,21 +147,22 @@ export class BaseToken extends TokenDocument{
         return [x,y];
     }
 
-    convertFromRimWorldCoordinates(x,y){
+    convertFromRimWorldCoordinates(x, y){
 
 
-        let curDimensions =game.scenes.viewed.dimensions;
+        let curDimensions = this.parent.dimensions;
         let squareSize = Math.floor(curDimensions.distancePixels);
-        y = Math.abs(y +1- Math.floor(curDimensions.rows));
+        y = Math.abs(y + 1 - Math.floor(curDimensions.rows));
         y = y * squareSize;
         x = x * squareSize;
-        return [x,y];
+        return [x, y];
     }
 
-    SetPosition(x,y){
-        let res = this.convertFromRimWorldCoordinates(x,y);
+    async SetPosition(x,y){
+        let res = this.convertFromRimWorldCoordinates(x, y);
         if(this.x !== res[0] || this.y !== res[1]){
-            this.update({x: res[0],y: res[1], preventSync:true});
+            return await this.update({x: res[0], y: res[1], preventSync: true});
         }
+        return this;
     }
 }

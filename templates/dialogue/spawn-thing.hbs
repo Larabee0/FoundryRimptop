@@ -15,7 +15,10 @@
                 <label class="left-row-item radio-button-row" data-tooltip="Select to spawn to the select pawn's apparel<br>Falls back to pawn inventory"  data-tooltip-direction="RIGHT" ><input type="radio" name="choice" value="five"> Spawn to pawn  apparel</label>
                 {{/if}}
                 {{/unless}}
-                <label class="left-row-item">Stack count <input name="stackCount" type="number" min="1" max="10" step="1" value="1"></label>
+
+                {{#if stackable}}
+                <label class="left-row-item">Stack count <input name="stackCount" type="number" min="1" max="{{stackLimit}}" step="1" value="{{stackCount}}"></label>
+                {{/if}}
                 <label class="left-row-item">Search <input type="text" id="thing-search-field" name="thing-search-field"></label>
             
                 <div class="left-row-item">
@@ -24,6 +27,7 @@
 
                 <div class="left-row-item">
                     <label name="target-thing">Value per unit: {{selectThingValue}}</label>
+                    <label name="target-thing">Total Value Requested: {{stackValue}}</label>
                 </div>
 
                 <div class="left-row-item quality-Select" name="quality-selector">

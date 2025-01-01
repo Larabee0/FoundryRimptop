@@ -16,7 +16,9 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
         actions:{
             selectPawn:ThingMoreMenu.#onSelectPawn,
             goBackFromSelectPawn:ThingMoreMenu.#onGoBackFromSelectPawn,
-            pickPawn:ThingMoreMenu.#sendToPawn
+            pickPawn:ThingMoreMenu.#sendToPawn,
+            sendToScene:ThingMoreMenu.#sendToScene,
+            sendToWorld:ThingMoreMenu.#sendToWorld
         }
     }
 
@@ -39,9 +41,11 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
     onCloseAction;
     selectPawn = false;
 
+    transferCount = 1;
+
     constructor(actor,thing,closeAction){
         super();
-        if(!actor || !thing){
+        if(!thing){
             return;
         }
         this.targetActor = actor;
@@ -55,7 +59,8 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
         }
 
         let context ={
-            thingContext: this.thingSituation
+            thingContext: this.thingSituation,
+            transferCount: this.transferCount
         }
 
         if(this.selectPawn){
@@ -70,6 +75,21 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
 
         console.log(context);
         return context;
+    }
+
+    _onRender(context,options){
+        
+        let transferSlider = this.element.querySelector("[id=amount-slider]");
+        if(transferSlider){
+            transferSlider.addEventListener("change",this.onChangeCount.bind(this));
+        }
+    }
+
+    onChangeCount(event){
+        
+        event.preventDefault();
+        this.transferCount = parseInt(event.currentTarget.value);
+        this.render();
     }
 
     _onClose(options){
@@ -130,4 +150,88 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
     async SendToPawn(pawnId, thingId){
         await CONFIG.csInterOP.SendHttpRequest("POST","tryAddToInventory",pawnId,thingId);
     }
+
+    static async #sendToWorld(event,button){
+        event.preventDefault();
+        
+        if(this.thingSituation.HeldByPawn){
+
+            var dropResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",this.thingSituation.HeldByPawn,this.targetThingId));
+            if(dropResult.Success){
+                if(!dropResult.SentToMap && !dropResult.SentToWorld){
+                    dropResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",this.thingSituation.HeldByPawn,this.targetThingId));
+                }
+                var thingActor = await CONFIG.csInterOP.handleDroppedThing(dropResult,false);
+                if(dropResult.SentToMap){
+                    await this.transferSceneToWorld(thingActor);
+                }
+                this.close();
+                return;
+            }
+            console.error("failed to drop thing",this.targetThingId,"from pawn",this.thingSituation.HeldByPawn);
+            
+        }
+        else if(this.thingSituation.HeldByMap){
+            await this.transferSceneToWorld();
+        }
+        this.close();
+    }
+
+    static async #sendToScene(event,button){
+        event.preventDefault();
+        if(this.thingSituation.HeldByPawn){
+            var dropResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",this.thingSituation.HeldByPawn,this.targetThingId));
+            if(dropResult.Success){
+                if(!dropResult.SentToMap && !dropResult.SentToWorld){
+                    dropResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",this.thingSituation.HeldByPawn,this.targetThingId));
+                }
+                var thingActor = await CONFIG.csInterOP.handleDroppedThing(dropResult);
+                if(dropResult.SentToWorld){
+                    await this.transferWorldToScene(thingActor);
+                }
+                this.close();
+                return;
+            }
+            console.error("failed to drop thing",this.targetThingId,"from pawn",this.thingSituation.HeldByPawn);
+        }
+        else if(this.thingSituation.HeldByWorld){
+            await this.transferWorldToScene();
+        }
+        this.close();
+    }
+
+    async transferSceneToWorld(thingActor){
+        // transfer map to world
+        await CONFIG.csInterOP.SendHttpRequest("POST","sendToWorldDirect",this.targetThingId);
+        var folder = CONFIG.csInterOP.GetWorldInventoryFolder();
+        if(thingActor){
+            thingActor = await thingActor.update({folder: folder});
+        }
+        else{
+            var thingData = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getThingData",this.targetThingId));
+            thingActor = await CONFIG.csInterOP.createActorThingRaw(thingData,"icons/svg/item-bag.svg",folder);
+        }
+    }
+
+    
+    async transferWorldToScene(thingActor){
+        // transfer world to map
+        var activeScene = game.scenes.current;
+        if(!activeScene){
+            return;
+        }
+        var folderId = activeScene.getFlag("rimtop","sceneFolder");
+
+        await CONFIG.csInterOP.SendHttpRequest("POST","sendMapToDirect",this.targetThingId,this.activeScene.id);
+
+        var folder = CONFIG.csInterOP.GetActorFolderById(folderId);
+        if(thingActor){
+            thingActor = await thingActor.update({folder: folder});
+        }
+        else{
+            var thingData = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getThingData",this.targetThingId));
+            await CONFIG.csInterOP.createActorThingRaw(thingData,"icons/svg/item-bag.svg",folder);
+        }
+    }
+
 }

@@ -17,6 +17,7 @@ export class SpawnThingSheet extends HandlebarsApplicationMixin(ApplicationV2) {
     lastQualitySelect = "Normal";
     lastStuffSelect;
 
+    stackCount = 1;
     
     scrollTop = 0;
     scrollLeft = 0;
@@ -113,7 +114,10 @@ export class SpawnThingSheet extends HandlebarsApplicationMixin(ApplicationV2) {
         if(typeof this.selectThingDef != "undefined"){
             // step 1, get the selected thingDef from dataJson.
             let thingDef = SpawnThingSheet.dataJson.ThingDefs[this.selectThingDef];
-
+            context.stackable = thingDef.StackLimit > 1;
+            context.stackLimit = thingDef.StackLimit;
+            this.stackCount= this.stackCount > thingDef.StackLimit ? thingDef.StackLimit : this.stackCount;
+            context.stackCount = this.stackCount;
             // step 2, option stuff check for stuff drop down.
             // if the thing has no valid stuff, then stuff is left undefined and hbs does not render the dropdown.
             // in this case lastStuffSelected is set to null.
@@ -161,6 +165,12 @@ export class SpawnThingSheet extends HandlebarsApplicationMixin(ApplicationV2) {
                 // neither quality or stuff
                 itemValue = await CONFIG.csInterOP.GetValueFor(this.selectThingDef,null,null);
             }
+            var rawValue = itemValue;
+            rawValue=rawValue.removeCharAt(0);
+
+            var stackValue = (Math.round((parseFloat(rawValue) * this.stackCount) * 100) / 100).toFixed(2);
+
+            context.stackValue = "$"+stackValue;
 
             // in order to have the dropdown values display correctly we much cache them into this scope.
             let selectedQuality = String(this.lastQualitySelect);
@@ -196,6 +206,7 @@ export class SpawnThingSheet extends HandlebarsApplicationMixin(ApplicationV2) {
         this.render(); // call render to rerender the window and update the context.
     }
 
+
     static async #onSpawnThing(event,button){
         event.preventDefault();
         console.log(this.selectThingDef)
@@ -211,7 +222,8 @@ export class SpawnThingSheet extends HandlebarsApplicationMixin(ApplicationV2) {
         let SpawnReq = {
             "Def": defName,
             "Stuff":context.selectedStuff,
-            "Q": context.selectedQuality
+            "Q": context.selectedQuality,
+            StackCount: this.stackCount
         } 
 
 
@@ -319,7 +331,9 @@ export class SpawnThingSheet extends HandlebarsApplicationMixin(ApplicationV2) {
                 // if no quality, reset the quality dropdown to the default, "Normal"
                 this.lastQualitySelect = "Normal";
             }
-
+            if(thingDef.StackLimit > 1){
+                this.element.querySelector("input[name=stackCount]").addEventListener("change",this.stackChanged.bind(this));
+            }
             // if the selected thing is made from stuff, bind the change event to it.
             if(thingDef.ValidStuff){
                 this.element.querySelector("select[name=stuff]").addEventListener("change",this.stuffChanged.bind(this));
@@ -343,6 +357,12 @@ export class SpawnThingSheet extends HandlebarsApplicationMixin(ApplicationV2) {
     // this recacualtes the thing value.
     stuffChanged(event){
         this.lastStuffSelect = event.currentTarget.value;
+        this.render();
+    }
+
+    
+    stackChanged(event){
+        this.stackCount = event.currentTarget.value;
         this.render();
     }
 
