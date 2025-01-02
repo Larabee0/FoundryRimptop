@@ -1,3 +1,6 @@
+
+import { ThingMoreMenu } from "../Sheets/Forms/ThingMoreMenu.js";
+
 export class StatCard{
     defaultStatCategory = "Basics";
     defaultStatIndex = 0;
@@ -67,7 +70,7 @@ export class StatCard{
         
         context.system.statCard.defaultStatCategory = this.defaultStatCategory;
         context.system.statCard.defaultStatIndex = this.defaultStatIndex;
-        //console.log(context);
+        console.log(context);
         //console.log(this.hyperlinkHistoryStack);
         //console.log(this.hyperLinkCached);
         return context;
@@ -100,11 +103,14 @@ export class StatCard{
             }
         }
 
-        let backButton = this.ownerSheet.element.getElementsByClassName("back-button");
+        let backButton = this.ownerSheet.element.querySelector("[name=back-button]");
         if(backButton){            
-            if(backButton.length > 0){
-                backButton[0].addEventListener("click",this.popHyperLink.bind(this));
-            }
+            backButton.addEventListener("click",this.popHyperLink.bind(this));
+        }
+        let transferButton = this.ownerSheet.element.querySelector("[name=transfer-button]");
+        if(transferButton){            
+            
+            transferButton.addEventListener("click",this.transferItem.bind(this));
         }
 
         let rollButton = this.ownerSheet.element.getElementsByClassName("rollable-stat-button");
@@ -167,6 +173,14 @@ export class StatCard{
             this.hyperLinkChange = true;
         }
         this.ownerSheet.render();
+    }
+
+    async transferItem(event){
+        event.preventDefault();
+        //console.log(this.boundActor.system.thingID);
+        var transferMenu = new ThingMoreMenu(null,this.boundActor.system.thingID,null);
+        transferMenu.render({force:true});
+        
     }
 
     async rollStat(event){

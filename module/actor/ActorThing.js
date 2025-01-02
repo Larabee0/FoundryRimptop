@@ -35,6 +35,7 @@ export class ActorThing extends Actor {
         await this.updateNeeds();
         await this.updateDownTime();
         await this.updateCombat();
+        await this.updateDisplayedName();
 
         let actorSingle = [];
         actorSingle.push(this.system.ThingID);
@@ -73,7 +74,23 @@ export class ActorThing extends Actor {
         if(data.CombatCard){
             updates = { ...updates,...this.genUpdateCombat(data.CombatCard)};
         }
+        if(data.DisplayName){
+            updates = { ...updates,...this.genUpdateDisplayName(data.DisplayName)};
+        }
         await this.update(updates);
+    }
+    
+    async updateDisplayedName(){
+        
+        if(this.type ==="thing"||this.type==="pawn"){
+            let updates=this.genUpdateDisplayName(await CONFIG.csInterOP.SendHttpRequest("GET","displayName",this.system.thingID));
+            await this.update(updates);
+        }
+    }
+
+    genUpdateDisplayName(json){
+        let updates = {name:json};
+        return updates;
     }
 
     async updateStats(){
@@ -237,25 +254,25 @@ export class ActorThing extends Actor {
 
     }
 
-    setThingId(value){
+    async setThingId(value){
         let updates={
             "system.thingID":value
         };
-        this.update(updates);
+        await this.update(updates);
     }
 
-    setThingDef(value){
+    async setThingDef(value){
         let updates={
             "system.thingDef":value
         };
-        this.update(updates);
+        await this.update(updates);
     }
 
-    setLastSpawnedToken(tokenId){
+    async setLastSpawnedToken(tokenId){
         let updates={
             "system.lastSpawnedToken":tokenId
         };
-        this.update(updates);
+        await this.update(updates);
     }
 
     async wait30Ticks(){
@@ -331,14 +348,25 @@ export class ActorThing extends Actor {
         }];
 
         await CONFIG.csInterOP.SpawnThings(JSON.stringify(thingsToSpawn));
-        this.setLastSpawnedToken(token._id);
+        await this.setLastSpawnedToken(token._id);
     }
 
     async despawn(){
         let thingsToDespawn = [this.system.thingID];
 
-        await CONFIG.csInterOP.DespawnThing(JSON.stringify(thingsToDespawn));
-        this.setLastSpawnedToken("");
+        var result = JSON.parse(await CONFIG.csInterOP.DespawnThing(JSON.stringify(thingsToDespawn)))[0];
+        if(result.Merged){
+            var thingActor = game.actors.get(CONFIG.csInterOP.GetActorByThingId(result.ResultThingId));
+            if(thingActor){
+                await thingActor.updateDisplayedName();
+            }
+        }        
+        if(result.Merged || result.Destroyed){
+            await this.delete();
+        }
+        else{
+            await this.setLastSpawnedToken("");
+        }
     }
 
     async validateSpawnStatus(spawnChanged,newValue){

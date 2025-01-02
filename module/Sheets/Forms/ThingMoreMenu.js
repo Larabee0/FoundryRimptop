@@ -156,15 +156,19 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
         
         if(this.thingSituation.HeldByPawn){
 
-            var dropResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",this.thingSituation.HeldByPawn,this.targetThingId));
+            var dropResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",this.thingSituation.HeldByPawn,this.targetThingId,this.transferCount));
             if(dropResult.Success){
                 if(!dropResult.SentToMap && !dropResult.SentToWorld){
-                    dropResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",this.thingSituation.HeldByPawn,this.targetThingId));
+                    dropResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",this.thingSituation.HeldByPawn, dropResult.ThingData.ThingId));
                 }
                 var thingActor = await CONFIG.csInterOP.handleDroppedThing(dropResult,false);
                 if(dropResult.SentToMap){
-                    await this.transferSceneToWorld(thingActor);
+                    await this.transferSceneToWorld(thingActor, this.transferCount);
                 }
+                else{
+                    await thingActor.updateDisplayedName();
+                }
+                
                 this.close();
                 return;
             }
@@ -180,14 +184,14 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
     static async #sendToScene(event,button){
         event.preventDefault();
         if(this.thingSituation.HeldByPawn){
-            var dropResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",this.thingSituation.HeldByPawn,this.targetThingId));
+            var dropResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",this.thingSituation.HeldByPawn,this.targetThingId,this.transferCount));
             if(dropResult.Success){
                 if(!dropResult.SentToMap && !dropResult.SentToWorld){
-                    dropResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",this.thingSituation.HeldByPawn,this.targetThingId));
+                    dropResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",this.thingSituation.HeldByPawn, dropResult.ThingData.ThingId));
                 }
                 var thingActor = await CONFIG.csInterOP.handleDroppedThing(dropResult);
                 if(dropResult.SentToWorld){
-                    await this.transferWorldToScene(thingActor);
+                    await this.transferWorldToScene(thingActor, this.transferCount);
                 }
                 this.close();
                 return;
@@ -195,43 +199,66 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
             console.error("failed to drop thing",this.targetThingId,"from pawn",this.thingSituation.HeldByPawn);
         }
         else if(this.thingSituation.HeldByWorld){
-            await this.transferWorldToScene();
+            
+            var thingActor =game.actors.get( CONFIG.csInterOP.GetActorByThingId(this.targetThingId));
+            await this.transferWorldToScene(thingActor,this.transferCount);
         }
         this.close();
     }
 
-    async transferSceneToWorld(thingActor){
+    async transferSceneToWorld(thingActor, stackCount){
         // transfer map to world
-        await CONFIG.csInterOP.SendHttpRequest("POST","sendToWorldDirect",this.targetThingId);
+        var result = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","sendToWorldDirect",thingActor.system.thingID,stackCount));
+        var thingId = result.ResultThingId;
+        if(result.Merged){
+            if(thingActor){
+                await thingActor.delete();
+            }
+            thingActor =game.actors.get( CONFIG.csInterOP.GetActorByThingId(thingId));
+            await thingActor.updateDisplayedName();
+        }
+
         var folder = CONFIG.csInterOP.GetWorldInventoryFolder();
         if(thingActor){
             thingActor = await thingActor.update({folder: folder});
         }
         else{
-            var thingData = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getThingData",this.targetThingId));
+            var thingData = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getThingData",thingId));
             thingActor = await CONFIG.csInterOP.createActorThingRaw(thingData,"icons/svg/item-bag.svg",folder);
+            
         }
     }
 
     
-    async transferWorldToScene(thingActor){
+    async transferWorldToScene(thingActor, count){
         // transfer world to map
         var activeScene = game.scenes.current;
-        if(!activeScene){
+        if(activeScene == null){
             return;
         }
+
         var folderId = activeScene.getFlag("rimtop","sceneFolder");
 
-        await CONFIG.csInterOP.SendHttpRequest("POST","sendMapToDirect",this.targetThingId,this.activeScene.id);
+        var spawnResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","sendMapToDirect",thingActor.system.thingID,activeScene.id,count));
+        if(thingActor.system.thingID !==spawnResult.ThingId){
+            
+            thingActor = null;
+        }
 
         var folder = CONFIG.csInterOP.GetActorFolderById(folderId);
         if(thingActor){
             thingActor = await thingActor.update({folder: folder});
         }
         else{
-            var thingData = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getThingData",this.targetThingId));
-            await CONFIG.csInterOP.createActorThingRaw(thingData,"icons/svg/item-bag.svg",folder);
+            var thingData = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getThingData",spawnResult.ThingId));
+            thingActor = await CONFIG.csInterOP.createActorThingRaw(thingData,"icons/svg/item-bag.svg",folder);
         }
+
+        var dimensions = activeScene.dimensions;
+        var x = dimensions.width / 2;
+        var y = dimensions.height / 2;
+        
+        await CONFIG.csInterOP.createToken(thingActor,activeScene,x,y);
     }
 
 }

@@ -522,8 +522,8 @@ eventSource;
             img: img,
             folder: folder
         });
-        actor.setThingId(thingData.ThingId);
-        actor.setThingDef(thingData.ThingDef);
+        await actor.setThingId(thingData.ThingId);
+        await actor.setThingDef(thingData.ThingDef);
         
         console.log("Created new Actor ",thingData.Label, " for ThingDef: ",thingData.ThingDef," Thing Id: ",thingData.ThingId);
         return actor;
@@ -544,7 +544,10 @@ eventSource;
         if(!thingDropResult.Success){
             return null;
         }
-
+        var existingActor = this.GetActorByThingId(thingDropResult.ThingData.ThingId)
+        if(existingActor){
+            return game.actors.get(existingActor);
+        }
         if(thingDropResult.SentToWorld){
             return await this.createActorThing(thingDropResult.ThingData);
         }
@@ -817,7 +820,26 @@ eventSource;
         
         console.log(String(thingsToDespawnInRimWorld.length)," things to despawn in rimworld");
         if(thingsToDespawnInRimWorld.length > 0){
-            await this.DespawnThing(JSON.stringify(thingsToDespawnInRimWorld));
+            var results = JSON.parse(await this.DespawnThing(JSON.stringify(thingsToDespawnInRimWorld)));
+            for(var i = 0; i < results.length; i++){
+                var result = results[i];
+                if(result.Success){
+                    var resultId = result.ResultThingId
+                    if(result.Merged){
+                        var thingActor = game.actors.get(CONFIG.csInterOP.GetActorByThingId(resultId));
+                        if(thingActor){
+                            await thingActor.updateDisplayedName();
+                        }
+                    }  
+                    if(result.Merged || result.Destroyed){
+                        
+                        var originalActor = game.actors.get(CONFIG.csInterOP.GetActorByThingId(thingsToDespawnInRimWorld[i]));
+                        if(originalActor){
+                            await originalActor.delete();
+                        } 
+                    }
+                }
+            }
             console.log("Despawned things.");
         }
 

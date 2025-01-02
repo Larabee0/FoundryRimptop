@@ -7,8 +7,14 @@
             <label class="stat-card-title">{{{Title}}}</label>
         </div>
         
+        {{#unless inHyperLink}}
+        {{#if system.showTransfer}}
+        <button class="back-button" name="transfer-button">Transfer to</button>
+        {{/if}}
+        {{/unless}}
+        
         {{#if inHyperLink}}
-        <button class="back-button">Back</button>
+        <button class="back-button" name="back-button">Back</button>
         {{/if}}
     </div>
     

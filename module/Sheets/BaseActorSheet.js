@@ -71,6 +71,7 @@ export class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2){
 
         if(actor.type === "thing"){
             context.thingExists = context.system.thingID !=="uncreatedThing" 
+            context.system.showTransfer = true;
         }
 
         return this._prepareContextStatCard(context, actor);
