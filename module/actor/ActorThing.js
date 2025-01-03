@@ -38,10 +38,10 @@ export class ActorThing extends Actor {
         await this.updateDisplayedName();
 
         let actorSingle = [];
-        actorSingle.push(this.system.ThingID);
+        actorSingle.push(this.system.thingID);
         let updates = JSON.parse( await this.SendHttpRequest("GET","refreshActors",JSON.stringify(actorSingle)));
-        if(updates[this.system.ThingID]){
-            await this.updateFrom(updates[this.system.ThingID]);
+        if(updates[this.system.thingID]){
+            await this.updateFrom(updates[this.system.thingID]);
         }
     }
 
@@ -83,7 +83,7 @@ export class ActorThing extends Actor {
     async updateDisplayedName(){
         
         if(this.type ==="thing"||this.type==="pawn"){
-            let updates=this.genUpdateDisplayName(await CONFIG.csInterOP.SendHttpRequest("GET","displayName",this.system.thingID));
+            let updates=this.genUpdateDisplayName(await CONFIG.HttpRequest.GetDisplayName(this.system.thingID));
             await this.update(updates);
         }
     }
@@ -95,7 +95,7 @@ export class ActorThing extends Actor {
 
     async updateStats(){
         if(this.type ==="thing"||this.type==="pawn"){
-            let updates=this.genUpdateStats(await CONFIG.csInterOP.GetThingStatCard(this.system.thingID));
+            let updates=this.genUpdateStats(await CONFIG.HttpRequest.GetThingStatCard(this.system.thingID));
             await this.update(updates);
         }
     }
@@ -111,7 +111,7 @@ export class ActorThing extends Actor {
 
     async updateBio(){
         if(this.type ==="pawn"){
-            let updates = this.genUpdateBio(await CONFIG.csInterOP.GetPawnBioCard(this.system.thingID));
+            let updates = this.genUpdateBio(await CONFIG.HttpRequest.GetPawnBioCard(this.system.thingID));
             await this.update(updates);
         }
     }
@@ -128,7 +128,7 @@ export class ActorThing extends Actor {
 
     async updateGear(){
         if(this.type==="pawn"){
-            let updates = this.genUpdateGear(await CONFIG.csInterOP.GetPawnGearCard(this.system.thingID));
+            let updates = this.genUpdateGear(await CONFIG.HttpRequest.GetPawnGearCard(this.system.thingID));
             await this.update(updates);
         }
     }
@@ -139,9 +139,9 @@ export class ActorThing extends Actor {
 
     async updateHealthSummary(){
         if(this.type==="pawn"){
-            let updates = this.genUpdateHealthSummary(await CONFIG.csInterOP.GetPawnHealthSummary(this.system.thingID));
+            let updates = this.genUpdateHealthSummary(await CONFIG.HttpRequest.GetPawnHealthSummary(this.system.thingID));
             
-            updates["system.statCard"]= JSON.parse( await CONFIG.csInterOP.GetThingStatCard(this.system.thingID));
+            updates["system.statCard"]= JSON.parse( await CONFIG.HttpRequest.GetThingStatCard(this.system.thingID));
             let curHp = updates["system.statCard"].Hp;
             let maxHp = updates["system.statCard"].MaxHp;
             updates["system.health"] = {max:maxHp,value:curHp};
@@ -156,7 +156,7 @@ export class ActorThing extends Actor {
 
     async updateHediffList(){
         if(this.type==="pawn"){
-            let updates = this.genUpdateHediffList(await CONFIG.csInterOP.GetPawnHediffList(this.system.thingID));
+            let updates = this.genUpdateHediffList(await CONFIG.HttpRequest.GetPawnHediffList(this.system.thingID));
             await this.update(updates);
         }
     }
@@ -167,7 +167,7 @@ export class ActorThing extends Actor {
 
     async updateOperationsBills(){
         if(this.type==="pawn"){
-            let updates = this.genUpdateOperationsBills(await CONFIG.csInterOP.GetPawnMedicalBills(this.system.thingID));
+            let updates = this.genUpdateOperationsBills(await CONFIG.HttpRequest.GetPawnMedicalBills(this.system.thingID));
             await this.update(updates);
         }
     }
@@ -178,7 +178,7 @@ export class ActorThing extends Actor {
 
     async updateNeeds(){
         if(this.type==="pawn"){
-            let updates = this.genUpdateNeeds(await CONFIG.csInterOP.GetPawnNeeds(this.system.thingID));
+            let updates = this.genUpdateNeeds(await CONFIG.HttpRequest.GetPawnNeeds(this.system.thingID));
             await this.update(updates);
         }
     }
@@ -189,7 +189,7 @@ export class ActorThing extends Actor {
 
     async updateDownTime(){
         if(this.type==="pawn"){
-            let updates =this.genUpdateDownTime(await CONFIG.csInterOP.GetPawnDownTime(this.system.thingID));
+            let updates =this.genUpdateDownTime(await CONFIG.HttpRequest.GetPawnDownTime(this.system.thingID));
             await this.update(updates);
         }
     }
@@ -200,7 +200,7 @@ export class ActorThing extends Actor {
 
     async updateCombat(){
         if(this.type==="pawn"){
-            let updates =this.genUpdateCombat(await CONFIG.csInterOP.GetPawnCombatCard(this.system.thingID));
+            let updates =this.genUpdateCombat(await CONFIG.HttpRequest.GetPawnCombatCard(this.system.thingID));
             await this.update(updates);
         }
     }
@@ -245,12 +245,12 @@ export class ActorThing extends Actor {
         return false;
     }
 
-    setSpawned(value){
+    async setSpawned(value){
         //console.log("set spawned ",value);
         let updates={
             "system.spawned":value
         };
-        this.update(updates);
+        return await this.update(updates);
 
     }
 
@@ -258,40 +258,40 @@ export class ActorThing extends Actor {
         let updates={
             "system.thingID":value
         };
-        await this.update(updates);
+        return await this.update(updates);
     }
 
     async setThingDef(value){
         let updates={
             "system.thingDef":value
         };
-        await this.update(updates);
+        return await this.update(updates);
     }
 
     async setLastSpawnedToken(tokenId){
         let updates={
             "system.lastSpawnedToken":tokenId
         };
-        await this.update(updates);
+        return await this.update(updates);
     }
 
     async wait30Ticks(){
-        await CONFIG.csInterOP.SendHttpRequest("POST","tryWaitTicks",this.system.thingID,"30");
+        await CONFIG.HttpRequest.TryWeightTicks(this.system.thingID,String(30));
     }
 
     async waitRestOfTurnTicks(){
-        await CONFIG.csInterOP.SendHttpRequest("POST","tryAllTicks",this.system.thingID);
+        await CONFIG.HttpRequest.TryWaitAllTicks(this.system.thingID);
     }
 
     async customWait(){
         
         let ticks = this.system.customTickDuration;
         ticks.clamp(1,360);
-        await CONFIG.csInterOP.SendHttpRequest("POST","tryWaitTicks",this.system.thingID,String(ticks));
+        await CONFIG.HttpRequest.TryWeightTicks(this.system.thingID,String(ticks));
     }
 
     async setCover(coverValue){
-        await CONFIG.csInterOP.SendHttpRequest("POST","setCover",this.system.thingID,coverValue);
+        await CONFIG.HttpRequest.SetCover(this.system.thingID, coverValue);
         await this.updateCombat();
     }
 
@@ -299,7 +299,7 @@ export class ActorThing extends Actor {
         if(this.system.type ==="thing"){
             return 0;
         }
-        return parseFloat((JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","rollStat",this.system.thingID,"Initiative"))).Value);
+        return parseFloat((JSON.parse(await CONFIG.HttpRequest.RollStat(this.system.thingID,"Initiative"))).Value);
     }
 
     async _preDelete(options,user){
@@ -311,7 +311,7 @@ export class ActorThing extends Actor {
         if(game.user._id===user.id){
             //console.log("Editor client!");
 
-            await CONFIG.csInterOP.DestroyThings(JSON.stringify([this.system.thingID]));
+            await CONFIG.HttpRequest.DestroyThings(JSON.stringify([this.system.thingID]));
             console.log("Destroyed thing in rimworld app");
         }
         return preDelete;
@@ -347,14 +347,76 @@ export class ActorThing extends Actor {
             Y: pos[1]
         }];
 
-        await CONFIG.csInterOP.SpawnThings(JSON.stringify(thingsToSpawn));
-        await this.setLastSpawnedToken(token._id);
+        var result = JSON.parse(await CONFIG.HttpRequest.SpawnThings(JSON.stringify(thingsToSpawn)));
+        if(result){
+            await this.processSpawnResult(token,result[0]);
+        }
+        else{
+            console.error("Recived no spawn result from spawn request");
+        }
+    }
+
+    async processSpawnResult(token,result){
+        if(!token){
+            console.error("Cannot process spawn result without intended token");
+            return;
+        }
+        if(result.Success){
+            var posFoundry = token.convertFromRimWorldCoordinates(result.X,result.Y);
+            if(result.ResultThingId !== this.system.thingID){
+                // thing id changed
+                var actordId = CONFIG.csInterOP.GetActorByThingId(result.ResultThingId);
+                if(actordId){ // changed thingId actor exists
+                    var otherActor = game.actors.get(actordId);
+                    if(otherActor.system.spawned){
+                        // if other the actor is spawned try and reuse its token if its on the right map and resolves.
+                        var otherTokens = otherActor.getAllSpawnedLinkedTokens();
+                        if(otherTokens){
+                            var otherToken=otherTokens[0];
+                            if(otherToken.parent._id === token.parent._id){
+                                // token fully resolved, set position
+                                await otherToken.SetPosition(result.X,result.Y);
+                            }
+                            else{
+                                // token on wrong map, create new token
+                                await CONFIG.csInterOP.createToken(otherActor,token.parent,posFoundry[0],posFoundry[1]);
+                            }
+                        }
+                        else{
+                            // token did not resolve, create new token
+                            await CONFIG.csInterOP.createToken(otherActor,token.parent,posFoundry[0],posFoundry[1]);
+                        }
+                    }
+                    else{
+                        // other actor is not spawned, create new token
+                        await CONFIG.csInterOP.createToken(otherActor,token.parent,posFoundry[0],posFoundry[1]);
+                    }
+                    // whatever happens we should delete this actor.
+                    await this.delete();
+                    return;
+                }
+                else{ 
+                    // the thingId has changed but it has no actor in foundry, we'll reassign ourselves to that thing id.
+                    // if this has occured, our old thingId has likely been absored into a spawned stack
+                    await this.setThingId(result.ResultThingId);
+                    await this.updateDisplayedName();
+                }
+            }  
+            else{
+                // validate spawn position
+                await token.SetPosition(result.X,result.Y);
+            }          
+            await this.setLastSpawnedToken(token._id);
+        }
+        else{
+            await this.setSpawned(false);
+        }
     }
 
     async despawn(){
         let thingsToDespawn = [this.system.thingID];
 
-        var result = JSON.parse(await CONFIG.csInterOP.DespawnThing(JSON.stringify(thingsToDespawn)))[0];
+        var result = JSON.parse(await CONFIG.HttpRequest.DespawnThing(JSON.stringify(thingsToDespawn)))[0];
         if(result.Merged){
             var thingActor = game.actors.get(CONFIG.csInterOP.GetActorByThingId(result.ResultThingId));
             if(thingActor){

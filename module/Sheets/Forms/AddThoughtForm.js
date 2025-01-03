@@ -71,7 +71,7 @@ export class AddThoughtForm extends HandlebarsApplicationMixin(ApplicationV2){
     async _prepareContext(options){
 
         if(Object.keys(AddThoughtForm.cachedThoughts).length === 0){
-            AddThoughtForm.cachedThoughts = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getAllThoughts"));
+            AddThoughtForm.cachedThoughts = JSON.parse(await CONFIG.HttpRequest.GetAllThoughts());
         }
 
         let context={
@@ -165,7 +165,7 @@ export class AddThoughtForm extends HandlebarsApplicationMixin(ApplicationV2){
             customThoughtRequest.OtherPawn = this.getAllPawnsId()[index];
         }
 
-        await CONFIG.csInterOP.SendHttpRequest("POST","addCustomThought",JSON.stringify(customThoughtRequest));
+        await CONFIG.HttpRequest.AddCustomThought(JSON.stringify(customThoughtRequest));
 
         if(this.closeAction){
             this.closeAction();
@@ -205,7 +205,7 @@ export class AddThoughtForm extends HandlebarsApplicationMixin(ApplicationV2){
             thoughtRequest.OtherPawn = this.getAllPawnsId()[index];
         }
 
-        await CONFIG.csInterOP.SendHttpRequest("POST","addThought",JSON.stringify(thoughtRequest));
+        await CONFIG.HttpRequest.AddThought(JSON.stringify(thoughtRequest));
 
         if(this.closeAction){
             this.closeAction();

@@ -92,15 +92,15 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
         this.render();
     }
 
-    _onClose(options){
+    async _onClose(options){
         super._onClose(options);
         if(this.onCloseAction){
-            this.onCloseAction();
+            await this.onCloseAction();
         }
     }
 
     async GetThingSituation(thingId){
-        return JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getThingContext",thingId));
+        return JSON.parse(await CONFIG.HttpRequest.GetThingContext(thingId));
     }
 
     getAllPawns(){
@@ -139,7 +139,7 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
         event.preventDefault();
         let pawnId = button.dataset.pawnId;
         let actorId = button.dataset.actorId;
-        await this.SendToPawn(pawnId,this.targetThingId);
+        await this.SendToPawn(pawnId,this.targetThingId,this.transferCount);
         let destinationActor = game.actors.get(actorId);
         if(destinationActor){
             destinationActor.updateGear();
@@ -147,8 +147,21 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
         this.close();
     }
 
-    async SendToPawn(pawnId, thingId){
-        await CONFIG.csInterOP.SendHttpRequest("POST","tryAddToInventory",pawnId,thingId);
+    async SendToPawn(pawnId, thingId,count){
+        var thingData = JSON.parse(await CONFIG.HttpRequest.TryAddToPawnInventory(pawnId,thingId,count));
+        var thindActorId = CONFIG.csInterOP.GetActorByThingId(thingId);
+        if(thindActorId){
+            var thingActor =game.actors.get(thindActorId);
+            if(thingData.ThingId === thingId){
+                // if the thingId is the same, a new thing was not made for the pawn inv,
+                // so if there is an actor associated with this thingId the actor needs deleting
+                await thingActor.delete();
+            }
+            else{
+                // else refresh the actor name
+                await thingActor.updateDisplayedName();
+            }
+        }
     }
 
     static async #sendToWorld(event,button){
@@ -156,10 +169,10 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
         
         if(this.thingSituation.HeldByPawn){
 
-            var dropResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",this.thingSituation.HeldByPawn,this.targetThingId,this.transferCount));
+            var dropResult = JSON.parse(await CONFIG.HttpRequest.DropThing(this.thingSituation.HeldByPawn,this.targetThingId,this.transferCount));
             if(dropResult.Success){
                 if(!dropResult.SentToMap && !dropResult.SentToWorld){
-                    dropResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",this.thingSituation.HeldByPawn, dropResult.ThingData.ThingId));
+                    dropResult = JSON.parse(await CONFIG.HttpRequest.DropThing(this.thingSituation.HeldByPawn, dropResult.ThingData.ThingId));
                 }
                 var thingActor = await CONFIG.csInterOP.handleDroppedThing(dropResult,false);
                 if(dropResult.SentToMap){
@@ -184,10 +197,10 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
     static async #sendToScene(event,button){
         event.preventDefault();
         if(this.thingSituation.HeldByPawn){
-            var dropResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",this.thingSituation.HeldByPawn,this.targetThingId,this.transferCount));
+            var dropResult = JSON.parse(await CONFIG.HttpRequest.DropThing(this.thingSituation.HeldByPawn,this.targetThingId,this.transferCount));
             if(dropResult.Success){
                 if(!dropResult.SentToMap && !dropResult.SentToWorld){
-                    dropResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",this.thingSituation.HeldByPawn, dropResult.ThingData.ThingId));
+                    dropResult = JSON.parse(await CONFIG.HttpRequest.DropThing(this.thingSituation.HeldByPawn, dropResult.ThingData.ThingId));
                 }
                 var thingActor = await CONFIG.csInterOP.handleDroppedThing(dropResult);
                 if(dropResult.SentToWorld){
@@ -208,7 +221,7 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
 
     async transferSceneToWorld(thingActor, stackCount){
         // transfer map to world
-        var result = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","sendToWorldDirect",thingActor.system.thingID,stackCount));
+        var result = JSON.parse(await CONFIG.HttpRequest.SendThingToWorldDirect(thingActor.system.thingID,stackCount));
         var thingId = result.ResultThingId;
         if(result.Merged){
             if(thingActor){
@@ -223,7 +236,7 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
             thingActor = await thingActor.update({folder: folder});
         }
         else{
-            var thingData = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getThingData",thingId));
+            var thingData = JSON.parse(await CONFIG.HttpRequest.GetThingData(thingId));
             thingActor = await CONFIG.csInterOP.createActorThingRaw(thingData,"icons/svg/item-bag.svg",folder);
             
         }
@@ -239,7 +252,7 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
 
         var folderId = activeScene.getFlag("rimtop","sceneFolder");
 
-        var spawnResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","sendMapToDirect",thingActor.system.thingID,activeScene.id,count));
+        var spawnResult = JSON.parse(await CONFIG.HttpRequest.SendThingToMapDirect(thingActor.system.thingID,activeScene.id,count));
         if(thingActor.system.thingID !==spawnResult.ThingId){
             
             thingActor = null;
@@ -250,7 +263,7 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
             thingActor = await thingActor.update({folder: folder});
         }
         else{
-            var thingData = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getThingData",spawnResult.ThingId));
+            var thingData = JSON.parse(await CONFIG.HttpRequest.GetThingData(spawnResult.ThingId));
             thingActor = await CONFIG.csInterOP.createActorThingRaw(thingData,"icons/svg/item-bag.svg",folder);
         }
 

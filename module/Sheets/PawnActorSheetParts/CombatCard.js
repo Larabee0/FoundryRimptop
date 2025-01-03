@@ -158,7 +158,7 @@ export class CombatCard{
 
     async completeBusyStance(event){
         event.preventDefault();
-        await CONFIG.csInterOP.SendHttpRequest("POST","tryCompleteBusyStance",this.ownerActorSheet.actor.system.thingID);
+        await CONFIG.HttpRequest.TryCompletePawnBusyStance(this.ownerActorSheet.actor.system.thingID);
         await this.internalRefresh();
     }
 
@@ -168,14 +168,14 @@ export class CombatCard{
         if(isNaN(index)){
             return;
         }
-        await CONFIG.csInterOP.SendHttpRequest("POST","refundAction",this.ownerActorSheet.actor.system.thingID,JSON.stringify(index));
+        await CONFIG.HttpRequest.RefundActionPoints(this.ownerActorSheet.actor.system.thingID,JSON.stringify(index));
         await this.internalRefresh();
         await game.combat.refreshCombatantInitativeByActorId(this.ownerActorSheet.actor._id);
     }
 
     async rollInit(event){
         event.preventDefault();
-        let rollResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","rollStat",this.ownerActorSheet.actor.system.thingID,"Initiative","stat-roll"));
+        let rollResult = JSON.parse(await CONFIG.HttpRequest.RollStat(this.ownerActorSheet.actor.system.thingID,"Initiative"));
         CONFIG.csInterOP.processChatMessage(rollResult,this.ownerActorSheet.actor,"stat-roll");
     }
 
@@ -239,7 +239,7 @@ export class CombatCard{
     }
 
     async DropThingInventory(pawnId, thingId){
-        await CONFIG.csInterOP.handleDroppedThing(JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",pawnId,thingId)));
+        await CONFIG.csInterOP.handleDroppedThing(JSON.parse(await CONFIG.HttpRequest.DropThing(pawnId,thingId)));
         await this.internalRefresh();
     }
 
@@ -252,7 +252,7 @@ export class CombatCard{
     }
     
     async OpenInfoCard(thingId){
-        let thingInfo = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getThingInfoCard",thingId));
+        let thingInfo = JSON.parse(await CONFIG.HttpRequest.GetThingInfoCard(thingId));
 
         let statSheet = new GenericStatCardSheet(thingInfo);
         statSheet.render({force:true});
@@ -269,7 +269,7 @@ export class CombatCard{
     }
 
     async TryEquipThing(pawnId, thingId){
-        await CONFIG.csInterOP.SendHttpRequest("POST","tryEquipThing",pawnId,thingId);
+        await CONFIG.HttpRequest.TryEquipThing(pawnId,thingId);
         await this.internalRefresh();
     }
 

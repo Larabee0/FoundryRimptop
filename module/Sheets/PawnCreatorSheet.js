@@ -59,7 +59,7 @@ export class PawnCreatorSheet extends HandlebarsApplicationMixin(ApplicationV2){
         console.log(this.targetActor);
 
         if(Object.keys(PawnCreatorSheet.kindDefCache).length === 0 ){
-            let res = await CONFIG.csInterOP.GetAllPawnKindDefs();
+            let res = await CONFIG.HttpRequest.GetAllPawnKindDefs();
             PawnCreatorSheet.kindDefCache = JSON.parse(res);
         }
 
@@ -258,10 +258,10 @@ export class PawnCreatorSheet extends HandlebarsApplicationMixin(ApplicationV2){
             pawnGenerationRequest.ForceDead = true;            
         }
         console.log(pawnGenerationRequest);
-        let response = JSON.parse(await CONFIG.csInterOP.MakePawnGeneratioRequest(JSON.stringify(pawnGenerationRequest)));
+        let response = JSON.parse(await CONFIG.HttpRequest.MakePawnGeneratioRequest(JSON.stringify(pawnGenerationRequest)));
         if(response.Success===true){
-            this.targetActor.setThingId(response.PawnId);
-            this.targetActor.setThingDef(response.PawnDef);
+            await this.targetActor.setThingId(response.PawnId);
+            await this.targetActor.setThingDef(response.PawnDef);
             this.close();
         }
         else{

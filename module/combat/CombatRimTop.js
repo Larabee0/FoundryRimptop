@@ -3,7 +3,7 @@ export class CombatRimTop extends Combat{
   async startCombat(){
     await this.setupTurns();
     if(game.user.isGM){
-      await CONFIG.csInterOP.SendHttpRequest("POST","setCombatMode",String(true));
+      await CONFIG.HttpRequest.SetCombatMode(String(true));
     }
     return super.startCombat();
   }
@@ -14,7 +14,7 @@ export class CombatRimTop extends Combat{
       content: `<p>${game.i18n.localize("COMBAT.EndConfirmation")}</p>`,
       yes: async() =>
         {
-          await CONFIG.csInterOP.SendHttpRequest("POST","setCombatMode",String(false));
+          await CONFIG.HttpRequest.SetCombatMode(String(false));
           this.delete();
         }
     });
@@ -23,19 +23,12 @@ export class CombatRimTop extends Combat{
   async _onStartTurn(combatant){
     if(combatant.actor && combatant.actor.type === "pawn"){
       console.log("startTurn",combatant.actor.name);
-      // if(JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","startTurn",combatant.actor.system.thingID))){
-      //   await combatant.actor.updateCombat();
-      // }
     }
   }
 
   async _onEndTurn(combatant){
     if(combatant.actor && combatant.actor.type === "pawn"){
-      console.log("endTurn",combatant.actor.name);
-      // if(JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","endTurn",combatant.actor.system.thingID))){
-      //   await combatant.actor.updateCombat();
-      // }
-      
+      console.log("endTurn",combatant.actor.name);      
     }
   }
 
@@ -105,10 +98,10 @@ export class CombatRimTop extends Combat{
     
     if(game.user.isGM){
       let serializedCombatants = JSON.stringify(this.getCombatantIds());
-      let shouldStartNextRound = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","checkNextRound",serializedCombatants));
+      let shouldStartNextRound = JSON.parse(await CONFIG.HttpRequest.CheckNextRound(serializedCombatants));
       if(shouldStartNextRound){
         await CONFIG.csInterOP.DoTurnCycle();
-        await CONFIG.csInterOP.SendHttpRequest("POST","nextRound",serializedCombatants)
+        await CONFIG.HttpRequest.NextRound(serializedCombatants)
         await this.nextRound();
       }
     }

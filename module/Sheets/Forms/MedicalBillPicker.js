@@ -57,7 +57,7 @@ export class MedicalBillPicker extends HandlebarsApplicationMixin(ApplicationV2)
 
     async _prepareContext(options){
         if(Object.keys(MedicalBillPicker.recipeCache).length === 0){
-            this.recipeCache = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","medOpRecipiesFor",MedicalBillPicker.targetActor.system.thingID));
+            this.recipeCache = JSON.parse(await CONFIG.HttpRequest.GetMedicalOperationRecipiesForPawn(MedicalBillPicker.targetActor.system.thingID));
         }
         let context= {
             recipes:this.recipeCache,
@@ -85,7 +85,7 @@ export class MedicalBillPicker extends HandlebarsApplicationMixin(ApplicationV2)
         let bodypartIndex = recipe.BodyPart;
         console.log(thingForMedBills,defName,bodypartIndex);
 
-        CONFIG.csInterOP.SendHttpRequest("POST","addOperationBill",thingForMedBills,defName,bodypartIndex);
+        CONFIG.HttpRequest.AddOperationBill("POST","addOperationBill",thingForMedBills,defName,bodypartIndex);
         this.closeAction();
         this.close();
     }

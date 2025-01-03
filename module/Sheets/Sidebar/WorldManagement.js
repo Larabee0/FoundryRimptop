@@ -77,7 +77,7 @@ export class RimWorldManagement extends HandlebarsApplicationMixin(ApplicationV2
 
     static async #onSaveNow(event, button){
         event.preventDefault();
-        await CONFIG.csInterOP.SaveNow();
+        await CONFIG.HttpRequest.SaveNow();
         this.render()
     }
 
@@ -91,7 +91,7 @@ export class RimWorldManagement extends HandlebarsApplicationMixin(ApplicationV2
 
     static async #onLoadSelected(event, button){
         event.preventDefault();
-        await CONFIG.csInterOP.LoadFile(this.selectedSave);
+        await CONFIG.HttpRequest.LoadFile(this.selectedSave);
         
     }
 

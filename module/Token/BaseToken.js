@@ -31,7 +31,7 @@ export class BaseToken extends TokenDocument{
             let actor = game.actors.get(this.actorId);
             if(this.actorLink){
                 actor = game.actors.get(this.actorId);
-                actor.setSpawned(false);
+                actor = await actor.setSpawned(false);
             }
             
         }
@@ -95,7 +95,7 @@ export class BaseToken extends TokenDocument{
                         Y: position[1]
                     }
 
-                    let newPos =JSON.parse(await CONFIG.csInterOP.SetPosition(JSON.stringify(moveReq)));
+                    let newPos =JSON.parse(await CONFIG.HttpRequest.SetPosition(JSON.stringify(moveReq)));
                     await this.SetPosition(newPos.X,newPos.Y);
                 }
             }

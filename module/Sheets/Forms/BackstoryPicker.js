@@ -64,14 +64,9 @@ export class BackstoryPicker extends HandlebarsApplicationMixin(ApplicationV2){
         BackstoryPicker.currentBackstory = currentBackstory;
     }
 
-    async GetAllBackstoriesFor(backstoryRequest){
-        return await CONFIG.csInterOP.SendHttpRequest("GET","getBackstories",backstoryRequest);
-    }
-
-
     async _prepareContext(options){
         if(BackstoryPicker.backstoryRefresh){
-            BackstoryPicker.backstoryCache = JSON.parse(await(this.GetAllBackstoriesFor(JSON.stringify({PawnId:BackstoryPicker.targetActor.system.thingID,Backstory:BackstoryPicker.backstorySlot}))));
+            BackstoryPicker.backstoryCache = JSON.parse(await(CONFIG.HttpRequest.GetAllBackstoriesFor(JSON.stringify({PawnId:BackstoryPicker.targetActor.system.thingID,Backstory:BackstoryPicker.backstorySlot}))));
             BackstoryPicker.backstoryRefresh = false;
         }
 

@@ -82,7 +82,7 @@ export default class MeleeAttackApplicationElement extends TargetedApplicationMi
         targetThingIds.push(actor.system.thingID);
       }
 
-      let hitChances =  JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getInstantMeleeHitChances",JSON.stringify(targetThingIds),ChatMessage.getSpeakerActor(this.chatMessage.speaker).system.thingID))
+      let hitChances =  JSON.parse(await CONFIG.HttpRequest.GetInstantMeleeHitChance(JSON.stringify(targetThingIds),ChatMessage.getSpeakerActor(this.chatMessage.speaker).system.thingID));
       for(let i = 0; i < actors.length; i++){
         targetedTokens.set(actors[i], {name: targetedTokens.get(actors[i]), hitChance: hitChances[i]});
       }
@@ -142,7 +142,7 @@ export default class MeleeAttackApplicationElement extends TargetedApplicationMi
     if(!instigator){
       return;
     }
-    let result = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","doAttack",instigator.system.thingID, token.system.thingID));
+    let result = JSON.parse(await CONFIG.HttpRequest.DoAttack(instigator.system.thingID, token.system.thingID));
     if(instigator.type==="pawn"){
       await instigator.updateCombat();
     }

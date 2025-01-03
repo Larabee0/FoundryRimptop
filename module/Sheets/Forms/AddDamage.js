@@ -62,7 +62,7 @@ export class AddDamage extends HandlebarsApplicationMixin(ApplicationV2){
     async _prepareContext(options){
         
         if(Object.keys(AddDamage.cachedDamgeDefs).length ===0){
-            AddDamage.cachedDamgeDefs = JSON.parse( await AddDamage.GetDamageDefs());
+            AddDamage.cachedDamgeDefs = JSON.parse( await CONFIG.HttpRequest.GetDamageAllDefs());
         }
         
         let context={
@@ -91,7 +91,7 @@ export class AddDamage extends HandlebarsApplicationMixin(ApplicationV2){
                 let local=this.getAllPawnsId()[this.selectedInstigator];
                 if(local !== this.selectedInstigatorPawn|| !this.cachedWeaponDefs){
                     this.selectedInstigatorPawn = local;
-                    this.cachedWeaponDefs = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","weaponDefsFromPawn",this.selectedInstigatorPawn));
+                    this.cachedWeaponDefs = JSON.parse(await CONFIG.HttpRequest.GetWeaponDefsFromPawn(this.selectedInstigatorPawn));
                 }
                 //console.log(this.selectedInstigatorPawn);
                 //console.log(this.cachedWeaponDefs);
@@ -196,14 +196,10 @@ export class AddDamage extends HandlebarsApplicationMixin(ApplicationV2){
         this.render();
     }
     
-    static async GetDamageDefs(){
-        return await CONFIG.csInterOP.SendHttpRequest("GET","getDamageDefs");
-    }
-
     static async #pickBodyPart(event,button){
         this.pickBodyPart = true;
         let selectedHediffDef = AddDamage.cachedDamgeDefs[this.selectedDamageDef].HediffDef;
-        this.targetableParts = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getPartsForHediff",this.pawnId,selectedHediffDef));
+        this.targetableParts = JSON.parse(await CONFIG.HttpRequest.GetPartsForHediff(this.pawnId, selectedHediffDef));
         this.render();
     }
 
@@ -246,7 +242,7 @@ export class AddDamage extends HandlebarsApplicationMixin(ApplicationV2){
         }
         //console.log(this.pawnId);
         //console.log(damageDef);
-        await CONFIG.csInterOP.SendHttpRequest("POST","addDamage",this.pawnId,damageDef,bodyPart,dmgAmount,armorPen,intigatorLoadId,instigatorWeaponId);
+        await CONFIG.HttpRequest.AddDamage(this.pawnId,damageDef,bodyPart,dmgAmount,armorPen,intigatorLoadId,instigatorWeaponId);
         if(this.closeAction){
             this.closeAction();
         }

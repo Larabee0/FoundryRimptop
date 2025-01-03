@@ -40,7 +40,7 @@ export class ConfigureMeleeAttacks extends HandlebarsApplicationMixin(Applicatio
     }
 
     async _prepareContext(options){
-        let context = this.verbOptions = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getMeleeAttackMode",this.pawnId));
+        let context = this.verbOptions = JSON.parse(await CONFIG.HttpRequest.GetMeleeAttackMode(this.pawnId));
 
         console.log(context);
         return context;
@@ -54,7 +54,7 @@ export class ConfigureMeleeAttacks extends HandlebarsApplicationMixin(Applicatio
         this.verbOptions.Apparel =  this.element.querySelector("[id=apparel-verbs]").checked;
         this.verbOptions.Hediff = this.element.querySelector("[id=hediff-verbs]").checked;
 
-        await CONFIG.csInterOP.SendHttpRequest("POST","setMeleeAttackMode",this.pawnId,JSON.stringify(this.verbOptions));
+        await CONFIG.HttpRequest.SetMeleeAttackMode(this.pawnId,JSON.stringify(this.verbOptions));
         
         if(this.closeAction){
             this.closeAction();

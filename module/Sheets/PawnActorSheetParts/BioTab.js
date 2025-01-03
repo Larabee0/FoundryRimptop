@@ -7,8 +7,6 @@ export class BioTab{
     
     editBio = false;
 
-    cachedTraits={};
-    cachedBackstories={};
     cachedSkills={};
     cachedBasic={};
 
@@ -42,7 +40,7 @@ export class BioTab{
                 this.recacheSkills();
             }
             if(Object.keys(this.cachedBasic).length ===0){
-                this.cachedBasic = JSON.parse(await BioTab.GetPawnBasicEditData(actor.system.thingID));
+                this.cachedBasic = JSON.parse(await CONFIG.HttpRequest.GetPawnBasicEditData(actor.system.thingID));
             }
             
             
@@ -161,7 +159,7 @@ export class BioTab{
                     return;
                 }
                 let traitDegree= parseInt(event.currentTarget.dataset.degree);
-                let currentTraits = this.ownerActorSheet.actor.system.bio.Traits;
+                let currentTraits = this.ownerActorSheet.actor.system.bio.TraitsSearchable;
                 let traitElement = currentTraits.find((element)=>element.DefName ===traitDef && element.Degree===traitDegree);
                 let remainingTraits = [];
                 if(traitElement){
@@ -298,7 +296,7 @@ export class BioTab{
             basicEdit.LastName = lastName.value;
         }
 
-        await BioTab.SetPawnBasicBioEdit(JSON.stringify(basicEdit));
+        await CONFIG.HttpRequest.SetPawnBasicBioEdit(JSON.stringify(basicEdit));
         if(event){
             await this.recacheEdit();
         }
@@ -306,7 +304,7 @@ export class BioTab{
 
     async onRandomiseName(event, button){
         event.preventDefault();
-        await BioTab.RandomisePawnName(this.ownerActorSheet.actor.system.thingID);
+        await CONFIG.HttpRequest.RandomisePawnName(this.ownerActorSheet.actor.system.thingID);
         await this.recacheEdit();
     }
 
@@ -319,7 +317,7 @@ export class BioTab{
             Passions:[this.cachedSkills[skillDef].Passion]
         }
 
-        await BioTab.SetPawnBioSkills(JSON.stringify(skillDataJson));
+        await CONFIG.HttpRequest.SetPawnBioSkills(JSON.stringify(skillDataJson));
     }
 
     async updateAllSkills(){
@@ -338,11 +336,11 @@ export class BioTab{
             skillDataJson.SkillValues.push(skillElement.Val);
             skillDataJson.Passions.push(skillElement.Passion);
         }
-        await BioTab.SetPawnBioSkills(JSON.stringify(skillDataJson));
+        await CONFIG.HttpRequest.SetPawnBioSkills(JSON.stringify(skillDataJson));
     }
 
     async recacheSkills(){
-        this.cachedSkills = JSON.parse(await(BioTab.GetSkillEditData(this.ownerActorSheet.actor.system.thingID)));
+        this.cachedSkills = JSON.parse(await(CONFIG.HttpRequest.GetSkillEditData(this.ownerActorSheet.actor.system.thingID)));
     }
 
     async updateBackstory(def,slot){
@@ -351,7 +349,7 @@ export class BioTab{
             BackstoryDef: def,
             BackstorySlot: slot
         }
-        await BioTab.SetPawnBioBackstories(JSON.stringify(backstoryChange))
+        await CONFIG.HttpRequest.SetPawnBioBackstories(JSON.stringify(backstoryChange))
         //console.log();
     }
 
@@ -368,14 +366,14 @@ export class BioTab{
                 traitDataJson.TraitDegrees.push(traits[i].Degree);
             } 
             await BioTab.SetPawnBioTraits(JSON.stringify(traitDataJson));
-            this.cachedSkills = JSON.parse(await(BioTab.GetSkillEditData(this.ownerActorSheet.actor.system.thingID)));
+            this.cachedSkills = JSON.parse(await(CONFIG.HttpRequest.GetSkillEditData(this.ownerActorSheet.actor.system.thingID)));
         }
     }
 
     async recacheEdit(){
         this.cachedBasic={};
         await this.ownerActorSheet.actor.updateBio();
-        this.cachedBasic = JSON.parse(await BioTab.GetPawnBasicEditData(this.ownerActorSheet.actor.system.thingID));
+        this.cachedBasic = JSON.parse(await CONFIG.HttpRequest.GetPawnBasicEditData(this.ownerActorSheet.actor.system.thingID));
         //await this.render();
     }
 
@@ -420,7 +418,7 @@ export class BioTab{
     }
     async onRandomiseTrait(event,button){
         event.preventDefault();
-        await BioTab.RandomisePawnTraits(this.ownerActorSheet.actor.system.thingID);
+        await CONFIG.HttpRequest.RandomisePawnTraits(this.ownerActorSheet.actor.system.thingID);
         
         await this.recacheSkills();
         await this.recacheEdit();
@@ -437,49 +435,9 @@ export class BioTab{
     async onRandomiseBackstory(event,button){
         
         event.preventDefault();
-        await BioTab.RandomisePawnBackstories(this.ownerActorSheet.actor.system.thingID);
+        await CONFIG.HttpRequest.RandomisePawnBackstories(this.ownerActorSheet.actor.system.thingID);
         
         await this.recacheSkills();
         await this.recacheEdit();
-    }
-
-
-    static async GetSkillEditData(pawnId){
-        return await CONFIG.csInterOP.SendHttpRequest("GET","getSkillEditData",pawnId);
-    }
-    static async GetPawnBasicEditData(pawnId){
-        return await CONFIG.csInterOP.SendHttpRequest("GET","getPawnBasicEdit",pawnId);
-    }
-
-    static async SetPawnBasicBioEdit(basicBioData){
-        return await CONFIG.csInterOP.SendHttpRequest("POST","setBioBasic",basicBioData);
-    }
-
-    static async SetPawnBioSkills(skills){
-        return await CONFIG.csInterOP.SendHttpRequest("POST","setBioSkills",skills);
-    }
-
-    static async SetPawnBioBackstories(backstories){
-        return await CONFIG.csInterOP.SendHttpRequest("POST","setBioBackstories",backstories);
-    }
-
-    static async SetPawnBioTraits(traits){
-        return await CONFIG.csInterOP.SendHttpRequest("POST","setBioTraits",traits)
-    }
-
-    static async RandomisePawnBio(pawnId){
-        await CONFIG.csInterOP.SendHttpRequest("POST","randomiseAll",pawnId);
-    }
-
-    static async RandomisePawnName(pawnId){
-        await CONFIG.csInterOP.SendHttpRequest("POST","randomiseName",pawnId);
-    }
-    
-    static async RandomisePawnBackstories(pawnId){
-        await CONFIG.csInterOP.SendHttpRequest("POST","randomiseBackstories",pawnId);
-    }
-    
-    static async RandomisePawnTraits(pawnId){
-        await CONFIG.csInterOP.SendHttpRequest("POST","randomiseTraits",pawnId);
     }
 }

@@ -58,9 +58,6 @@ export class TraitPicker extends HandlebarsApplicationMixin(ApplicationV2){
         TraitPicker.targetActor = actor;
     }
 
-    static async GetAllTraitsFor(pawnId){
-        return await CONFIG.csInterOP.SendHttpRequest("GET","getAllTraits",pawnId);
-    }
 
     async _prepareContext(options){
         if(TraitPicker.traitRefresh){
@@ -134,7 +131,7 @@ export class TraitPicker extends HandlebarsApplicationMixin(ApplicationV2){
 
     static async updateTraitCache(actor){
 
-        TraitPicker.traitCache = JSON.parse(await(this.GetAllTraitsFor(actor.system.thingID)));
+        TraitPicker.traitCache = JSON.parse(await(CONFIG.HttpRequest.GetAllTraitsForPawn(actor.system.thingID)));
         TraitPicker.targetActor = actor;
     }
 

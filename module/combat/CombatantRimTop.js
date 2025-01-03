@@ -18,11 +18,11 @@ export class CombatantRimTop extends Combatant{
     async updateInitiative(){
         let original = this.getFlag("rimtop","originalInitative");
         
-        let value = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getTicksUsedThisTurn",this.actor.system.thingID));
+        let value = JSON.parse(await CONFIG.HttpRequest.GetTicksUsedThisTurn(this.actor.system.thingID));
         if(value == 0){
-            if(JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","autoPassTurn",this.actor.system.thingID))){
+            if(JSON.parse(await CONFIG.HttpRequest.AutoPassTurn(this.actor.system.thingID))){
               await this.actor.updateCombat();
-              value = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getTicksUsedThisTurn",this.actor.system.thingID));
+              value = JSON.parse(await CONFIG.HttpRequest.GetTicksUsedThisTurn(this.actor.system.thingID));
             }
         }
         await this.update({initiative:original-value});

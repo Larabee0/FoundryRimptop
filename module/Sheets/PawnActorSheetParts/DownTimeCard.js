@@ -54,7 +54,7 @@ export class DownTimeCard{
         let alwaysRest = this.ownerActorSheet.element.querySelector("[id=always-rest]").checked;
         let virtuallySpawned = this.ownerActorSheet.element.querySelector("[id=virtually-spawned]").checked;
 
-        await CONFIG.csInterOP.SendHttpRequest("POST","setMiscDownTime",this.ownerActorSheet.actor.system.thingID,String(disableDownTime),restEffectiveness,String(alwaysRest),String(virtuallySpawned));
+        await CONFIG.HttpRequest.SetMiscDownTime(this.ownerActorSheet.actor.system.thingID,String(disableDownTime),restEffectiveness,String(alwaysRest),String(virtuallySpawned));
         await this.internalRefresh();
     }
 

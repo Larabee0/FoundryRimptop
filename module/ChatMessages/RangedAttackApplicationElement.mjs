@@ -84,7 +84,7 @@ export default class RangedAttackApplicationElement extends TargetedApplicationM
       }
         console.log(this.rangedAttackThingId);
         console.trace();
-      let hitChances =  JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getInstantRangedHitChances",JSON.stringify(targetThingIds),ChatMessage.getSpeakerActor(this.chatMessage.speaker).system.thingID,this.rangedAttackThingId))
+      let hitChances =  JSON.parse(await CONFIG.HttpRequest.GetInstantRangedHitChances(JSON.stringify(targetThingIds),ChatMessage.getSpeakerActor(this.chatMessage.speaker).system.thingID,this.rangedAttackThingId));
       console.log(hitChances);
       for(let i = 0; i < actors.length; i++){
         targetedTokens.set(actors[i], {name: targetedTokens.get(actors[i]), hitChance: hitChances[i]});
@@ -146,7 +146,7 @@ export default class RangedAttackApplicationElement extends TargetedApplicationM
       return;
     }
     console.log("do ranged attack on",token.system.thingID,"with",this.rangedAttackThingId,"from",instigator);
-    let result = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","doAttack",instigator.system.thingID, token.system.thingID));
+    let result = JSON.parse(await CONFIG.HttpRequest.DoAttack(instigator.system.thingID, token.system.thingID));
     console.log(result);
     if(instigator.type==="pawn"){
       await instigator.updateCombat();

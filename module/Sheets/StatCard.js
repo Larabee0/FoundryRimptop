@@ -49,7 +49,7 @@ export class StatCard{
         context.system.statCard.hideRefresh = this.boundActor ? true : false;
         if(this.hyperLinkChange){
             if(this.hyperlinkHistoryStack.length > 0){
-                this.hyperLinkCached = JSON.parse(await CONFIG.csInterOP.ResolveStatHyperLink(this.hyperlinkHistoryStack[this.hyperlinkHistoryStack.length-1]));
+                this.hyperLinkCached = JSON.parse(await CONFIG.HttpRequest.ResolveStatHyperLink(this.hyperlinkHistoryStack[this.hyperlinkHistoryStack.length-1]));
             }
             this.defaultStatCategory = "Basics";
             this.defaultStatIndex = 0;
@@ -127,7 +127,9 @@ export class StatCard{
     }
 
     async onRefreshStats(event){
-        event.preventDefault();        
+        if(event){
+            event.preventDefault();
+        }
         await this.boundActor.updateStats();
         this.ownerSheet.render();
     }
@@ -178,7 +180,7 @@ export class StatCard{
     async transferItem(event){
         event.preventDefault();
         //console.log(this.boundActor.system.thingID);
-        var transferMenu = new ThingMoreMenu(null,this.boundActor.system.thingID,null);
+        var transferMenu = new ThingMoreMenu(null,this.boundActor.system.thingID,this.onRefreshStats.bind(this));
         transferMenu.render({force:true});
         
     }
@@ -187,7 +189,7 @@ export class StatCard{
         event.preventDefault();
         let statDefName = event.currentTarget.dataset.defName;
 
-        let rollResult = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","rollStat",this.ownerSheet.actor.system.thingID,statDefName,"stat-roll"));
+        let rollResult = JSON.parse(await CONFIG.HttpRequest.RollStat(this.ownerSheet.actor.system.thingID, statDefName));
         CONFIG.csInterOP.processChatMessage(rollResult,this.ownerSheet.actor,"stat-roll");
     }
     

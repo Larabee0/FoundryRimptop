@@ -72,7 +72,7 @@ export class EditActivity extends HandlebarsApplicationMixin(ApplicationV2){
 
             if(EditActivity.selectedLearnMode === 1 || EditActivity.selectedLearnMode === 2){
                 if(Object.keys(EditActivity.cachedSkillsForPawn).length === 0){
-                    EditActivity.cachedSkillsForPawn = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","learnableSkillsFor",this.pawnId));
+                    EditActivity.cachedSkillsForPawn = JSON.parse(await CONFIG.HttpRequest.GetLearnSkillsFor(this.pawnId));
                 }
 
                 if(EditActivity.selectedLearnMode === 2){
@@ -150,7 +150,7 @@ export class EditActivity extends HandlebarsApplicationMixin(ApplicationV2){
             }
         }
         console.log(downTimeData);
-        await CONFIG.csInterOP.SendHttpRequest("POST","setDownTimeActivity",this.pawnId,JSON.stringify(downTimeData),JSON.stringify(skillData));
+        await CONFIG.HttpRequest.SetDownTimeActivityFor(this.pawnId,JSON.stringify(downTimeData),JSON.stringify(skillData));
         if(this.closeAction){
             this.closeAction();
         }

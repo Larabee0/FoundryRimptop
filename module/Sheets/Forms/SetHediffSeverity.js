@@ -74,11 +74,11 @@ export class SetHediffSeverity extends HandlebarsApplicationMixin(ApplicationV2)
                     if(newSeverity > this.currentSeverity){
                         newSeverity = this.currentSeverity
                     }
-                    CONFIG.csInterOP.SendHttpRequest("POST","healHediff",this.pawnId,this.hediffId,newSeverity);
+                    CONFIG.HttpRequest.HealHediff(this.pawnId,this.hediffId,newSeverity);
                 }
                 else{
                     newSeverity += this.currentSeverity
-                    CONFIG.csInterOP.SendHttpRequest("POST","harmHediff",this.pawnId,this.hediffId,newSeverity);
+                    CONFIG.HttpRequest.HarmHediff(this.pawnId,this.hediffId,newSeverity);
                 }
                 if(this.closeAction){
                     this.closeAction();

@@ -5,9 +5,9 @@ export class TokenRimTop extends Token {
         //super._onHoverIn(event,options);
         let actorSelf = this.document.actor;
         let selectedActor = this.getSingletonSelectedActor();
-        if(selectedActor != null)
+        if(selectedActor != null && selectedActor.type === "pawn")
         {
-            let result = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getInstantHitChance",selectedActor.system.thingID, actorSelf.system.thingID));
+            let result = JSON.parse(await CONFIG.HttpRequest.GetInstanceHitChance(selectedActor.system.thingID, actorSelf.system.thingID));
             
             const right = window.innerWidth - Math.ceil(this.worldTransform.tx - 8);
             const top = Math.floor(this.worldTransform.ty - 8);
@@ -37,7 +37,7 @@ export class TokenRimTop extends Token {
             //console.log("Selected actor",selectedActor,"right clickedActor",actorSelf);
             event.preventDefault();
             event.stopPropagation();
-            let result = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","doAttack",selectedActor.system.thingID, actorSelf.system.thingID));
+            let result = JSON.parse(await CONFIG.HttpRequest.DoAttack(selectedActor.system.thingID, actorSelf.system.thingID));
             //console.log(result);
             if(selectedActor.type==="pawn"){
               await selectedActor.updateCombat();

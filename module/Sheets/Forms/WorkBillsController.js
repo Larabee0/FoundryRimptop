@@ -24,13 +24,13 @@ export class WorkBillsController{
 
     async _prepareContext(context){
         if(Object.keys(WorkBillsController.cachedWorkBills).length === 0){
-            WorkBillsController.cachedWorkBills = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","workBills",WorkBillsController.actor.system.thingID));
+            WorkBillsController.cachedWorkBills = JSON.parse(await CONFIG.HttpRequest.GetWorkBillsForPawn(WorkBillsController.actor.system.thingID));
         }
         context.workBills = WorkBillsController.cachedWorkBills;
         context.showBills = !this.showAddBill;
         if(this.showAddBill){
             if(Object.keys(WorkBillsController.cachedRecipes).length === 0){
-                WorkBillsController.cachedRecipes = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","allRecipeUserDefData"));
+                WorkBillsController.cachedRecipes = JSON.parse(await CONFIG.HttpRequest.GetAllRecipieUserDefData());
                 let categoryKeys = Object.keys(WorkBillsController.cachedRecipes.Categories);
                 for(let i = 0; i < categoryKeys.length; i++){
                     WorkBillsController.cachedRecipes.Categories[categoryKeys[i]].On = true;
@@ -145,7 +145,7 @@ export class WorkBillsController{
         event.preventDefault();
         let recipeDef = event.currentTarget.dataset.def;
         let bench = WorkBillsController.cachedRecipes.Recipies[recipeDef].BelongsTo[Math.floor(Math.random() * WorkBillsController.cachedRecipes.Recipies[recipeDef].BelongsTo.length)];
-        await CONFIG.csInterOP.SendHttpRequest("POST","addNewRecipe",WorkBillsController.actor.system.thingID,recipeDef,bench);
+        await CONFIG.HttpRequest.AddNewRecipe(WorkBillsController.actor.system.thingID,recipeDef,bench);
         this.showAddBill = false;
         this.internalRefreshWithBills();
     }

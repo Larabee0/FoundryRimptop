@@ -1,5 +1,6 @@
 import { ActorThing } from "../actor/ActorThing.js";
 import { TimeControls } from "../Sheets/TimeControls.js";
+import { CSHttpRequest } from "./CSHttpRequests.js";
 
 const url =window.location.href.replace("30000/game",'8000/');
 
@@ -18,6 +19,7 @@ eventSource;
 
         Hooks.once("ready",async ()=>{
             console.log(url);
+            CONFIG.HttpRequest = new CSHttpRequest(this);
             if(game.users.activeGM?.isSelf){
                 await this.ensureFileSystem();
                 Hooks.on("rimAppConn",async ()=>
@@ -25,7 +27,7 @@ eventSource;
                     await this.SyncAllDataToRimWorldApp();
                 });
                 console.log("Is GM, running CS init!");
-                let res = await this.ConnectToRimWorldApp();
+                let res = await CONFIG.HttpRequest.ConnectToRimWorldApp();
                 console.log(res);
                 
                 Hooks.on("createScene",async (document)=>{
@@ -44,49 +46,26 @@ eventSource;
                     }
                 
                     scenesForRW.push(JSON.stringify(mapData));
-                    let response =JSON.parse(await this.ValidateMap(JSON.stringify(scenesForRW)));
+                    let response =JSON.parse(await CONFIG.HttpRequest.ValidateMap(JSON.stringify(scenesForRW)));
                     console.log(response);
                     
                 });
                 Hooks.on("updateScene",async (document,changed)=>{
-                    console.log("updateScene");
-                    
-                    if("name" in changed){
-                        var folder = this.GetSceneFolder(scene);
-                        await folder.update({name: ("Scene: "+document.name)});
-                        // console.log(folderId);
-                        console.log(game.actors.folders.get(folderId));
-                    }
-                    
-                    if(changed.height || changed.width){
-                        let scenesForRW=[];
-                    
-                    let scene = document;
-                    let dimensions = this.getSceneSize(scene);
-                    let mapData = {
-                        Id: scene._id,
-                        X: dimensions[0],
-                        Y: dimensions[1]
-                    }
-                
-                    scenesForRW.push(JSON.stringify(mapData));
-                    let response =JSON.parse(await this.ValidateMap(JSON.stringify(scenesForRW)));
-                    console.log(response);
-                    }
+                    await this.handleMapUpdate(document,changed);
                 });
                 Hooks.on("deleteScene",async (scene)=>{
                     console.log("deleteScene");
                     var folder = this.GetSceneFolder(scene);
                     await folder.delete({deleteSubfolders: true, deleteContents: true});
-                    await this.DeleteMap(scene._id);
+                    await CONFIG.HttpRequest.DeleteMap(scene._id);
                 });
                 Hooks.on("canvasReady",async ()=>{
                     console.log("Setting curretn Map");
-                    await this.SetCurrentMap(game.users.activeGM.viewedScene);
+                    await CONFIG.HttpRequest.SetCurrentMap(game.users.activeGM.viewedScene);
                 });
             }
             else{
-                let appState = await this.AppStateCheck();
+                let appState = await CONFIG.HttpRequest.AppStateCheck();
                 console.log(game.user._id);
                 if(appState == true){
                     console.log("app is loaded and in correct world");
@@ -100,7 +79,55 @@ eventSource;
         });
         
     }
+    async handleMapUpdate(document,changed){
+        console.log("updateScene");
+                    
+        if("name" in changed){
+            var folder = this.GetSceneFolder(scene);
+            await folder.update({name: ("Scene: "+document.name)});
+            // console.log(folderId);
+            console.log(game.actors.folders.get(folderId));
+        }
+        
+        if(changed.height || changed.width){
+            let scenesForRW=[];
+        
+            let scene = document;
+            let dimensions = this.getSceneSize(scene);
+            let mapData = {
+                Id: scene._id,
+                X: dimensions[0],
+                Y: dimensions[1]
+            }
+        
+            scenesForRW.push(JSON.stringify(mapData));
+            let response =JSON.parse(await CONFIG.HttpRequest.ValidateMap(JSON.stringify(scenesForRW)));
+            if(response.ModifiedSize){
+                // validate map actors spawned
+                var tokens = this.getAllTokens(true);
 
+                for(let i = 0; i < tokens.length; i++){
+                    var token = tokens[i];
+                    if(token.parent._id !== scene._id){
+                        continue;
+                    }
+                    var actor = game.actors.get(token.actorId);
+                    var thingId = actor.system.thingID;
+                    var thingContext = JSON.parse(await CONFIG.HttpRequest.GetThingContext(thingId));
+                    if(!thingContext.Exists){
+                        await actor.delete();
+                    }
+                    else{
+                        if(!thingContext.Spawned){
+                            await token.update({actorLink: false});
+                        }
+                    }
+                }
+
+            }
+            console.log(response);
+        }
+    }
     async ensureFileSystem(){
         var actorFolders = Array.from(game.actors.folders);
 
@@ -216,54 +243,11 @@ eventSource;
         return this.GetActorFolderByName(worldInventoryFolder);
     }
 
-    GetAllThingDefs(){
-        return this.SendHttpRequest("GET","allThingDefs");
-    }
-
-    GetAllPawnKindDefs(){
-        return this.SendHttpRequest("GET","getAllPawnKindDefs");
-    }
-
-    MakePawnGeneratioRequest(request){
-        return this.SendHttpRequest("GET","pawnGenReq",request);
-    }
-
-    GetValueFor(thing,stuff,quality){
-        return this.SendHttpRequest("GET","getValueFor",thing,stuff,quality);
-    }
-
-    MakeThing(dataIn){
-        return this.SendHttpRequest("GET","makeThing",JSON.stringify(dataIn));
-    }
-
-    SaveNow(){
-        return this.SendHttpRequest("POST","saveNow");
-    }
-
-    AutoSave(){
-        this.SendHttpRequest("POST","autoSaveNow");
-    }
-
-    LoadFile(file){
-        return this.SendHttpRequest("POST","loadFile",file);
-    }
-
     async RestartRimWorldApplication(){
         let result =  this.SendHttpRequest("POST","restart");        
         await new Promise(resolve => setTimeout(resolve, 100));
         await this.ConnectToRimWorldApp();
         return result;
-    }
-
-    async ConnectToRimWorldApp(){
-        let res = await this.SendHttpRequest("POST","worldStartUp",game.world.id);
-        Hooks.call("rimAppConn");
-        return res;
-    }
-
-    async AppStateCheck(){
-        let res = await this.SendHttpRequest("POST","state",game.world.id);
-        return res;
     }
 
     OpenTimeControls(){
@@ -382,7 +366,7 @@ eventSource;
         await this.validateSpawnStatus(existingTokens);
 
         console.log("### Foundry-RimWorld Sync completed. ###");
-        await this.SetCurrentMap(game.users.activeGM.viewedScene);
+        await CONFIG.HttpRequest.SetCurrentMap(game.users.activeGM.viewedScene);
 
         await this.refreshAllActors();
     }
@@ -395,7 +379,7 @@ eventSource;
             thingIds.push(existingActors[i].system.thingID);
         }
 
-        let updates = JSON.parse( await this.SendHttpRequest("GET","refreshActors",JSON.stringify(thingIds)));
+        let updates = JSON.parse(await CONFIG.HttpRequest.RefreshAllActors(JSON.stringify(thingIds)));
         let keys = Object.keys(updates);
 
 
@@ -467,7 +451,7 @@ eventSource;
             scenesForRW.push(JSON.stringify(mapData));
 
         }
-        let response =JSON.parse(await this.SyncMaps(JSON.stringify(scenesForRW)));
+        let response =JSON.parse(await CONFIG.HttpRequest.SyncMaps(JSON.stringify(scenesForRW)));
         let mapsWithIssues = 0;
         for (let i = 0; i < response.length; i++){
             let sceneResult = response[i];
@@ -498,23 +482,6 @@ eventSource;
         return [x,y];
     }
 
-    async SyncMaps(mapData){
-        return await this.SendHttpRequest("POST","validateAllMaps",mapData);
-    }
-
-    async ValidateMap(mapData){
-        return await this.SendHttpRequest("POST","validateMap",mapData);
-    }
-
-    async DeleteMap(sceneId){
-        await this.SendHttpRequest("POST","deleteMap",sceneId);
-    }
-
-    async SetCurrentMap(sceneId){
-        await this.SendHttpRequest("POST", "setCurrentMap",sceneId);
-    }
-
-
     async createActorThingRaw(thingData,img,folder){
         var actor = await ActorThing.create({
             name: thingData.Label,
@@ -522,8 +489,8 @@ eventSource;
             img: img,
             folder: folder
         });
-        await actor.setThingId(thingData.ThingId);
-        await actor.setThingDef(thingData.ThingDef);
+        actor = await actor.setThingId(thingData.ThingId);
+        actor = await actor.setThingDef(thingData.ThingDef);
         
         console.log("Created new Actor ",thingData.Label, " for ThingDef: ",thingData.ThingDef," Thing Id: ",thingData.ThingId);
         return actor;
@@ -573,7 +540,8 @@ eventSource;
             else{
                 var actor = await this.createActorThing(thingDropResult.ThingData);
                 console.warn("Actor", actor._id,"should go to scene folder but couldn't find scene",thingDropResult.MapFoundryId, ",sent it to world instead");
-                await CONFIG.csInterOP.SendHttpRequest("POST","sendToWorldDirect",thingDropResult.ThingData.ThingId);
+                await CONFIG.HttpRequest.SendThingToWorldDirect(thingDropResult.ThingData.ThingId,-1);
+                console.warn("Called SendToWorldDirect but there is no handling in the case the thing is merged or otherwise destroyed.");
                 return actor;
             }
         }
@@ -590,7 +558,7 @@ eventSource;
 
     async validateActors(existingActors){
         console.log("Validating Actors...");
-        let allThings = JSON.parse(await this.SendHttpRequest("GET","getAllThings"));
+        let allThings = JSON.parse(await CONFIG.HttpRequest.GetAllThings());
         console.log(String(allThings.length)," existing things in RW Save");
         let thingSet = new Set(allThings);
 
@@ -629,16 +597,28 @@ eventSource;
                 };
                 missingThings.push(JSON.stringify(data));
             }
-            let resolvedThings = JSON.parse(await this.ResolveMissingThings(JSON.stringify(missingThings)));
+            let resolvedThings = JSON.parse(await CONFIG.HttpRequest.GetResolveMissingThings(JSON.stringify(missingThings)));
             console.log(String(resolvedThings.CreatedThings.length), " things created");
             console.log(String(resolvedThings.OptNoCreate.length), " things opted to not create");
 
             for(let i = 0; i< resolvedThings.CreatedThings.length; i++) {
                 let response = resolvedThings.CreatedThings[i];
                 let actor = game.actors.get(response.ActorId);
-                actor.setThingId(response.ThingId);
-                actor.setThingDef(response.ThingDef);
-                console.log("thing ",response.ThingDef, " created."," ThingId: ", response.ThingId," Actor Id: ", response.ActorId, );
+                if(response.Merged && actor.system.thingID !== response.ThingId){
+                    await actor.delete();
+                    var mergedActorId = this.GetActorByThingId(response.ThingId);
+                    if(mergedActorId){
+                        var mergedActor = game.actors.get(mergedActorId);
+                        await mergedActor.updateDisplayedName();
+                    }
+                    console.log("thing resolved req for",response.ActorId, "was resolved by merge into",response.ThingId,"unresolved actor has been deleted.");
+                }
+                else{
+                    await actor.setThingId(response.ThingId);
+                    await actor.setThingDef(response.ThingDef);
+                    console.log("thing ",response.ThingDef, " created."," ThingId: ", response.ThingId," Actor Id: ", response.ActorId, );    
+                }
+                
             }
 
             for(let i = 0; i< resolvedThings.OptNoCreate.length; i++) {
@@ -659,21 +639,13 @@ eventSource;
             // some thing in rimworld do not exist in foundry
             console.log("Resolving missing things...");
             let missingActors = Array.from(thingSet);
-            let missingActorData = JSON.parse(await this.GetMissingActorData(JSON.stringify(missingActors)));
+            let missingActorData = JSON.parse(await CONFIG.HttpRequest.GetMissingActorData(JSON.stringify(missingActors)));
             console.log(String(missingActorData.length)," missing actors");
             for(let i = 0; i< missingActorData.length; i++){
                 await this.createActorThing(missingActorData[i]);
             }
         }
         console.log("Validated all Actors and Things successfully.")
-    }
-
-    async ResolveMissingThings(missingThings){
-        return await this.SendHttpRequest("GET","resolveMissingThings",missingThings);
-    }
-
-    async GetMissingActorData(missingActors){
-        return await this.SendHttpRequest("GET","getMissingActorData",missingActors);
     }
 
     async validateSpawnStatus(existingTokens){
@@ -688,7 +660,7 @@ eventSource;
         //           2. if the token exists in foundry and rimworld, remove it from the unhandled foundry tokens.
 
         // 1.1
-        let spawnedThingsInRimWorld = JSON.parse(await this.SendHttpRequest("GET","getSpawnedThings"));
+        let spawnedThingsInRimWorld = JSON.parse(await CONFIG.HttpRequest.GetSpawnedThings());
         console.log(String(spawnedThingsInRimWorld.length)," things spawned in rimworld");
         let thingsToDespawnInRimWorld =[];
 
@@ -702,7 +674,18 @@ eventSource;
                 //token.registerTokenToActorNow();
             }
             else{
-                thingsToDespawnInRimWorld.push(cur.ThingId);
+                var actorId = this.GetActorByThingId(cur.ThingId);
+                var scene = game.scenes.get(cur.MapId);
+                if(actorId && scene){
+                    var actor = game.actors.get(actorId);
+                    if(!actor.system.spawned){
+                        var pos = this.convertFromRimWorldCoordinates(cur.X,cur.Y);
+                        await this.createToken(actor,scene,pos[0],pos[1]);
+                    }
+                }
+                else{
+                    thingsToDespawnInRimWorld.push(cur.ThingId);
+                }
             }
         }
 
@@ -870,7 +853,13 @@ eventSource;
             }
             console.log(String(thingsToSpawn.length)," things to spawn");
 
-            await this.SpawnThings(JSON.stringify(thingsToSpawn));
+            var results = JSON.parse(await this.SpawnThings(JSON.stringify(thingsToSpawn)));
+
+            for(let i = 0; i < results.length; i++){
+                var targetActor = game.actors.get(unhandledTokens[i].actorId);
+                await targetActor.processSpawnResult(unhandledTokens[i],results[i]);
+            }
+
             console.log("Spawned things.");
         }
 
@@ -890,7 +879,7 @@ eventSource;
             tokenPositions.push(JSON.stringify(moveReq));
         }
         
-        let response=JSON.parse(await this.SetPositionBulk( JSON.stringify(tokenPositions)));
+        let response=JSON.parse(await CONFIG.HttpRequest.SetPositionBulk( JSON.stringify(tokenPositions)));
 
         for(let i = 0;i < existingTokens.length; i++){
             let element = JSON.parse(response[i]);
@@ -920,26 +909,6 @@ eventSource;
         //                        5. remove all Tokens in foundry & DeSpawn the object in RimWorld.
     }
 
-    async DestroyThings(thingsToDestroy){
-        return await this.SendHttpRequest("POST","destroyThings",thingsToDestroy);
-    }
-
-    async DespawnThing(thingsToDespawn){
-        return await this.SendHttpRequest("POST","deSpawnThings",thingsToDespawn);
-    }
-
-    async SpawnThings(thingsToSpawn){
-        return await this.SendHttpRequest("POST","spawnThings",thingsToSpawn);
-    }
-
-    async SetPosition(moveReq){
-        return await this.SendHttpRequest("POST","setPosition",moveReq);
-    }
-
-    async SetPositionBulk(data){
-        return await this.SendHttpRequest("POST","setPositionBulk",data);
-    }
-
     getViewedScenes(disconnectedPlayersOnly){
         let users = game.users.apps;
         let viewedScenes = [];
@@ -963,45 +932,6 @@ eventSource;
             }
         }
         return views;
-    }
-
-
-    async GetThingStatCard(thingID){
-        return await this.SendHttpRequest("GET","getThingStatCard",thingID);
-    }
-
-    async ResolveStatHyperLink(hyperlink){
-        return await this.SendHttpRequest("GET","resolveStatHyperLink",hyperlink);
-    }
-
-    
-    async GetPawnBioCard(pawnId){
-        return await this.SendHttpRequest("GET","getPawnBioCard",pawnId);
-    }
-    async GetPawnGearCard(pawnId){
-        return await this.SendHttpRequest("GET","getGearCard",pawnId);
-    }
-    async GetPawnHealthSummary(pawnId){
-        return await this.SendHttpRequest("GET","getHealthSummary",pawnId);
-    }
-    async GetPawnHediffList(pawnId){
-        return await this.SendHttpRequest("GET","getHediffList",pawnId);
-    }
-
-    async GetPawnMedicalBills(pawnId){
-        return await this.SendHttpRequest("GET","getOperationsList",pawnId);
-    }
-
-    async GetPawnNeeds(pawnId){
-        return await this.SendHttpRequest("GET","getNeedsCard",pawnId);
-    }
-
-    async GetPawnDownTime(pawnId){
-        return await this.SendHttpRequest("GET","getDownTime",pawnId);
-    }
-
-    async GetPawnCombatCard(pawnId){
-        return await this.SendHttpRequest("GET","getCombatCard",pawnId);
     }
 
     chatTemplates={

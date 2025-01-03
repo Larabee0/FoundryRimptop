@@ -85,7 +85,7 @@ export class HealthCard{
         event.preventDefault();
         let pawnId = this.ownerActorSheet.actor.system.thingID;
         let hediffId = event.currentTarget.dataset.hediffId;
-        await CONFIG.csInterOP.SendHttpRequest("POST","removeHediff",pawnId,hediffId);
+        await CONFIG.HttpRequest.RemoveHediff(pawnId,hediffId);
         await this.internalRefresh();
     }
 
@@ -140,7 +140,7 @@ export class HealthCard{
     async onToggleSelfTend(){
         let newValue = !this.ownerActorSheet.actor.system.healthSummary.SelfTend;
         //console.log(JSON.stringify(newValue));
-        await CONFIG.csInterOP.SendHttpRequest("POST","setSelfTend",this.ownerActorSheet.actor.system.thingID,JSON.stringify(newValue));
+        await CONFIG.HttpRequest.SetSelfTend(this.ownerActorSheet.actor.system.thingID, JSON.stringify(newValue));
         await this.ownerActorSheet.actor.updateHealthSummary();
         this.ownerActorSheet.render();
     }
@@ -159,7 +159,7 @@ export class HealthCard{
     }
 
     async OpenHediffInfoCard(pawnId,hediffId){
-        let hediffInfo = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getHediffInfoCard",pawnId,hediffId));
+        let hediffInfo = JSON.parse(await CONFIG.HttpRequest.GetHediffInfoCard(pawnId,hediffId));
 
         //console.log(hediffInfo);
         let statSheet = new GenericStatCardSheet(hediffInfo);
@@ -171,9 +171,6 @@ export class HealthCard{
         event.preventDefault();
         let billPicker = new MedicalBillPicker(this.ownerActorSheet.actor,this.internalRefresh.bind(this))
         billPicker.render({force:true});
-        //let pawnId = this.ownerActorSheet.actor.system.thingID;
-        //let recipies = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","medOpRecipiesFor",pawnId));
-        //console.log(recipies);
     }
 
     onAddDamage(event,button){
@@ -187,7 +184,7 @@ export class HealthCard{
     async onResurrectPawn(event,button){
         event.preventDefault();
         let pawnId = this.ownerActorSheet.actor.system.thingID;
-        await CONFIG.csInterOP.SendHttpRequest("POST","gmResurrect",pawnId);
+        await CONFIG.HttpRequest.GMResurrectPawn(pawnId);
         await this.internalRefresh();
     }
 }

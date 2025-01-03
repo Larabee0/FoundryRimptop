@@ -125,18 +125,18 @@ export class GearCard{
     }
 
     async IngestThing(pawnId,thingId){
-        await CONFIG.csInterOP.SendHttpRequest("POST","ingestThing",pawnId,thingId);
+        await CONFIG.HttpRequest.IngestThing(pawnId,thingId);
         await this.internalRefresh();
     }
 
     async DropThingInventory(pawnId, thingId){
         console.log("Drop thing",thingId);
-        await CONFIG.csInterOP.handleDroppedThing(JSON.parse(await CONFIG.csInterOP.SendHttpRequest("POST","dropThing",pawnId,thingId)));
+        await CONFIG.csInterOP.handleDroppedThing(JSON.parse(await CONFIG.HttpRequest.DropThing(pawnId,thingId)));
         await this.internalRefresh();
     }
 
     async OpenInfoCard(thingId){
-        let thingInfo = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getThingInfoCard",thingId));
+        let thingInfo = JSON.parse(await CONFIG.HttpRequest.GetThingInfoCard(thingId));
 
         let statSheet = new GenericStatCardSheet(thingInfo);
         statSheet.render({force:true});
@@ -145,12 +145,12 @@ export class GearCard{
     }
 
     async TryWearThing(pawnId, thingId){
-        await CONFIG.csInterOP.SendHttpRequest("POST","tryWearThing",pawnId,thingId);
+        await CONFIG.HttpRequest.TryWearThing(pawnId,thingId);
         await this.internalRefresh();
     }
 
     async TryEquipThing(pawnId, thingId){
-        await CONFIG.csInterOP.SendHttpRequest("POST","tryEquipThing",pawnId,thingId);
+        await CONFIG.HttpRequest.TryEquipThing(pawnId,thingId);
         await this.internalRefresh();
     }
 }

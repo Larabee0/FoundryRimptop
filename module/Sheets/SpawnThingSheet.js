@@ -62,7 +62,7 @@ export class SpawnThingSheet extends HandlebarsApplicationMixin(ApplicationV2) {
         console.log(actorContext);
         // cache the data from rimworld if we lack it.
         if(Object.keys(SpawnThingSheet.dataJson).length === 0 ){
-            let res = await CONFIG.csInterOP.GetAllThingDefs();
+            let res = await CONFIG.HttpRequest.GetAllThingDefs();
             SpawnThingSheet.dataJson = JSON.parse(res);
         }
         
@@ -151,19 +151,19 @@ export class SpawnThingSheet extends HandlebarsApplicationMixin(ApplicationV2) {
 
             if(thingDef.HasQuality && thingDef.ValidStuff != null){
                 // quality & stuff
-                itemValue = await CONFIG.csInterOP.GetValueFor(this.selectThingDef,this.lastStuffSelect,this.lastQualitySelect);
+                itemValue = await CONFIG.HttpRequest.GetValueFor(this.selectThingDef,this.lastStuffSelect,this.lastQualitySelect);
             }
             else if(thingDef.HasQuality){
                 // just quality
-                itemValue = await CONFIG.csInterOP.GetValueFor(this.selectThingDef,null,this.lastQualitySelect);
+                itemValue = await CONFIG.HttpRequest.GetValueFor(this.selectThingDef,null,this.lastQualitySelect);
             }
             else if(thingDef.ValidStuff != null){
                 // just stuff
-                itemValue = await CONFIG.csInterOP.GetValueFor(this.selectThingDef,this.lastStuffSelect,null);
+                itemValue = await CONFIG.HttpRequest.GetValueFor(this.selectThingDef,this.lastStuffSelect,null);
             }
             else{
                 // neither quality or stuff
-                itemValue = await CONFIG.csInterOP.GetValueFor(this.selectThingDef,null,null);
+                itemValue = await CONFIG.HttpRequest.GetValueFor(this.selectThingDef,null,null);
             }
             var rawValue = itemValue;
             rawValue=rawValue.removeCharAt(0);
@@ -260,14 +260,14 @@ export class SpawnThingSheet extends HandlebarsApplicationMixin(ApplicationV2) {
         }
     
 
-        let spawnResult = JSON.parse( await CONFIG.csInterOP.MakeThing(SpawnReq));
+        let spawnResult = JSON.parse( await CONFIG.HttpRequest.MakeThing(JSON.stringify(SpawnReq)));
         console.log(spawnResult);
 
         if(!context.disableSpawnOptions){
             if("ThingId" in spawnResult){
                 if(giveToActorType ==="thing"){
-                    this.giveToActor.setThingId(spawnResult.ThingId);
-                    this.createActor.setThingDef(defName);
+                    this.createActor=await this.createActor.setThingId(spawnResult.ThingId);
+                    this.createActor=await this.createActor.setThingDef(defName);
                 }
             }
             if("Spawned" in spawnResult){
@@ -276,8 +276,8 @@ export class SpawnThingSheet extends HandlebarsApplicationMixin(ApplicationV2) {
         }
         else{
             if("ThingId" in spawnResult){
-                this.createActor.setThingId(spawnResult.ThingId);
-                this.createActor.setThingDef(defName);
+                this.createActor=await this.createActor.setThingId(spawnResult.ThingId);
+                this.createActor=await this.createActor.setThingDef(defName);
             }
         }
 

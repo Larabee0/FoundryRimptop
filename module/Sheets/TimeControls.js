@@ -53,7 +53,7 @@ export class TimeControls extends HandlebarsApplicationMixin(ApplicationV2) {
     
     async _prepareContext(options){
         
-        let context = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getTimeData"));
+        let context = JSON.parse(await CONFIG.HttpRequest.GetTimeData());
 
         if(Object.keys(TimeControls.lastTimeData).length > 0){
             context.timeData = TimeControls.lastTimeData;
@@ -94,10 +94,10 @@ export class TimeControls extends HandlebarsApplicationMixin(ApplicationV2) {
     }
     async DoTicks(ticks){
         
-        await CONFIG.csInterOP.SendHttpRequest("POST","doTicks",ticks.scientificToDecimal());
+        await CONFIG.HttpRequest.DoTicks(ticks.scientificToDecimal());
         TimeControls.lastToRunForTicks = ticks;
         CONFIG.csInterOP.TimeControlsEventSource(TimeControls.HandleBackChannelTime.bind(this));
-        await CONFIG.csInterOP.SendHttpRequest("POST","setTickRun",String(true));
+        await CONFIG.HttpRequest.SetTickRun(String(true));
         TimeControls.renderInterval=setInterval(this.render.bind(this),1000);
         TimeControls.firstRender = true;
     }
@@ -251,8 +251,8 @@ export class TimeControls extends HandlebarsApplicationMixin(ApplicationV2) {
     static async #stopRunningTime(event,button){
         event.preventDefault();
         console.log("cancel");
-        await CONFIG.csInterOP.SendHttpRequest("POST","doTicks",String(1));
-        await CONFIG.csInterOP.SendHttpRequest("POST","setTickRun",String(true));
+        await CONFIG.HttpRequest.DoTicks(String(1));
+        await CONFIG.HttpRequest.SetTickRun(String(true));
         TimeControls.firstRender = true;
         clearInterval(TimeControls.renderInterval);
 
@@ -261,7 +261,7 @@ export class TimeControls extends HandlebarsApplicationMixin(ApplicationV2) {
     static async #pauseRunningTime(event,button){
         event.preventDefault();
         console.log("pause");
-        await CONFIG.csInterOP.SendHttpRequest("POST","setTickPause",String(true));
+        await CONFIG.HttpRequest.SetTickPause(String(true));
         TimeControls.firstRender = true;
 
     }
@@ -269,7 +269,7 @@ export class TimeControls extends HandlebarsApplicationMixin(ApplicationV2) {
     static async #playRunningTime(event,button){
         event.preventDefault();
         console.log("play");
-        await CONFIG.csInterOP.SendHttpRequest("POST","setTickPause",String(false));
+        await CONFIG.HttpRequest.SetTickPause(String(false));
         TimeControls.firstRender = true;
         
     }
@@ -281,7 +281,7 @@ export class TimeControls extends HandlebarsApplicationMixin(ApplicationV2) {
 
     static async #toggleCombat(event,button){
         event.preventDefault();
-        await CONFIG.csInterOP.SendHttpRequest("POST","setCombatMode",String(button.checked));
+        await CONFIG.HttpRequest.SetCombatMode(String(button.checked));
 
         this.render();
     }
@@ -289,6 +289,6 @@ export class TimeControls extends HandlebarsApplicationMixin(ApplicationV2) {
     static async #clearCombatData(event, button){
         
         event.preventDefault();
-        await CONFIG.csInterOP.SendHttpRequest("POST","clearCombatData");
+        await CONFIG.HttpRequest.ClearCombatData();
     }
 }

@@ -43,7 +43,7 @@ export class InterPawnTending extends HandlebarsApplicationMixin(ApplicationV2){
         
 
         if(this.targetPawnsBeingTended.length === 0){
-            let rawTending =  JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getPawnInterTending", InterPawnTending.targetActor.system.thingID));
+            let rawTending =  JSON.parse(await CONFIG.HttpRequest.GetInterPawnTending(InterPawnTending.targetActor.system.thingID));
             for(let i = 0; i < rawTending.length; i++){
                 if((rawTending[i] in this.allowedPawns)){
                     this.targetPawnsBeingTended.push(rawTending[i]);
@@ -79,7 +79,7 @@ export class InterPawnTending extends HandlebarsApplicationMixin(ApplicationV2){
         }
 
         console.log(tendingPawns);
-        await CONFIG.csInterOP.SendHttpRequest("POST","setInterPawnTending", InterPawnTending.targetActor.system.thingID,JSON.stringify(tendingPawns));
+        await CONFIG.HttpRequest.SetInterPawnTending(InterPawnTending.targetActor.system.thingID,JSON.stringify(tendingPawns));
 
         return super._preClose();
     }

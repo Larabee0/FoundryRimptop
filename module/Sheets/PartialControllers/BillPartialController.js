@@ -95,7 +95,7 @@ export class BillPartialController{
     async info(event){
         event.preventDefault();
         let recipeDefName = event.currentTarget.dataset.recipeDef;
-        let recipeData =  JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getRecipeStatCard",recipeDefName));
+        let recipeData =  JSON.parse(await CONFIG.HttpRequest.GetRecipeStatCard(recipeDefName));
         let statCard = new GenericStatCardSheet(recipeData);
         statCard.render({force:true});
     }
@@ -130,7 +130,7 @@ export class BillPartialController{
         minorConfig.MapLoadId = billContainer.dataset.mapId;
         minorConfig.PawnId = this.ownerActor.system.thingID;
         console.log(minorConfig);
-        await CONFIG.csInterOP.SendHttpRequest("POST","minorBillConfig",JSON.stringify(minorConfig));
+        await CONFIG.HttpRequest.SetMinorBillConfig(JSON.stringify(minorConfig));
         if(this.activityAction){
             this.activityAction();
         }

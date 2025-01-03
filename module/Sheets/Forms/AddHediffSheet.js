@@ -49,7 +49,7 @@ export class AddHediffSheet extends HandlebarsApplicationMixin(ApplicationV2){
     async _prepareContext(options){
 
         if(Object.keys(AddHediffSheet.cachedHediffs).length ===0){
-            AddHediffSheet.cachedHediffs =  JSON.parse( await AddHediffSheet.GetHediffs());
+            AddHediffSheet.cachedHediffs =  JSON.parse( await CONFIG.HttpRequest.GetAllHediffs());
         }
 
         let context ={
@@ -111,7 +111,7 @@ export class AddHediffSheet extends HandlebarsApplicationMixin(ApplicationV2){
         event.preventDefault();
         this.selectedHediffDef = event.currentTarget.dataset.hediffDef;
 
-        this.targetableParts = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getPartsForHediff",this.pawnId,this.selectedHediffDef));
+        this.targetableParts = JSON.parse(await CONFIG.HttpRequest.GetPartsForHediff(this.pawnId,this.selectedHediffDef));
 
         this.scrollTop = 0;
         this.scrollLeft = 0;
@@ -121,7 +121,7 @@ export class AddHediffSheet extends HandlebarsApplicationMixin(ApplicationV2){
     async addHediff(event){
 
         let partIndex = event.currentTarget.dataset.index;
-        await CONFIG.csInterOP.SendHttpRequest("POST","addHediff",this.pawnId,this.selectedHediffDef,partIndex);
+        await CONFIG.HttpRequest.AddHediff(this.pawnId,this.selectedHediffDef,partIndex);
         if(this.closeAction){
             this.closeAction();
         }
@@ -131,9 +131,5 @@ export class AddHediffSheet extends HandlebarsApplicationMixin(ApplicationV2){
     static #onBackToHediffDefPick(event,button){
         this.targetableParts={};
         this.render();
-    }
-
-    static async GetHediffs(){
-        return await CONFIG.csInterOP.SendHttpRequest("GET","getHediffs");
     }
 }

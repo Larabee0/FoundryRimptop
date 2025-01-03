@@ -75,6 +75,7 @@
                 
             </div>
             <div class="right-column display-vertical">
+                {{#if IngredientsConfig}}
                 <div class="clear-allow-container display-horizontal">
                     <button data-action="clearAll">Clear all</button>
                     <button data-action="allowAll">Allow all</button>
@@ -98,6 +99,7 @@
                     {{/each}}
                     {{>"systems/rimtop/templates/partials/bill-ingredient-item-partial.hbs" IngredientsConfig.IngredientsFilter.CategoryJson}}
                 </div>
+                {{/if}}
             </div>
         </div>
     </div>

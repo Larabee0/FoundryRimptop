@@ -62,9 +62,12 @@ export class BillConfigForm extends HandlebarsApplicationMixin(ApplicationV2){
 
         
         if(Object.keys(BillConfigForm.billConfigData).length ===0){
-            BillConfigForm.billConfigData = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","billConfigData",this.pawnId,this.billId,this.billMapId));
-
-            BillConfigForm.billConfigData.IngredientsConfig.IngredientsFilter = JSON.parse(BillConfigForm.billConfigData.IngredientsConfig.IngredientsFilter);
+            BillConfigForm.billConfigData = JSON.parse(await CONFIG.HttpRequest.GetBillConfigData(this.pawnId,this.billId,this.billMapId));
+            
+            if(BillConfigForm.billConfigData.IngredientsConfig){
+                BillConfigForm.billConfigData.IngredientsConfig.IngredientsFilter = JSON.parse(BillConfigForm.billConfigData.IngredientsConfig.IngredientsFilter);
+            }
+            
         }
         let context = {
             configData:BillConfigForm.billConfigData
@@ -124,16 +127,17 @@ export class BillConfigForm extends HandlebarsApplicationMixin(ApplicationV2){
             this.productQualitySlider?._onRender(this.element.querySelector("[id=product-quality-container]"));
             this.onChangeProductQuality();
         }
-        if(context.configData.IngredientsConfig.MinHp !== -1 && context.configData.IngredientsConfig.MaxHp !== -1){
-            this.ingredientHpSlider?._onRender(this.element.querySelector("[id=ingredient-hp-container]"));
-            this.onChangeIngredientHp();
+        if(context.configData.IngredientsConfig){
+            if(context.configData.IngredientsConfig.MinHp !== -1 && context.configData.IngredientsConfig.MaxHp !== -1){
+                this.ingredientHpSlider?._onRender(this.element.querySelector("[id=ingredient-hp-container]"));
+                this.onChangeIngredientHp();
+            }
+            if(context.configData.IngredientsConfig.QualityMin !== -1 && context.configData.IngredientsConfig.QualityMax !== -1){
+                this.ingredientQualitySlider?._onRender(this.element.querySelector("[id=ingredient-quality-container]"));
+                this.onChangeIngredientQuality();
+            }
+            this.ingredientsOnRender();
         }
-        if(context.configData.IngredientsConfig.QualityMin !== -1 && context.configData.IngredientsConfig.QualityMax !== -1){
-            this.ingredientQualitySlider?._onRender(this.element.querySelector("[id=ingredient-quality-container]"));
-            this.onChangeIngredientQuality();
-        }
-        
-        this.ingredientsOnRender();
     }
 
     async _preClose(options){
@@ -170,12 +174,12 @@ export class BillConfigForm extends HandlebarsApplicationMixin(ApplicationV2){
             billConfig.ThingFilters = filter;
         }
         console.log(billConfig);
-        await CONFIG.csInterOP.SendHttpRequest("POST","sendBillConfig",this.pawnId,this.billId,this.billMapId,JSON.stringify(billConfig));
+        await CONFIG.HttpRequest.SendBillConfig(this.pawnId,this.billId,this.billMapId,JSON.stringify(billConfig));
     }
     
     async recacheRepeatCurrentCountCached(){
         await this.setBillConfig();
-        BillConfigForm.billConfigData.RepeatCurrentCount=parseInt(await CONFIG.csInterOP.SendHttpRequest("GET","billProductCountFromPawn",this.pawnId,this.billId,this.billMapId)).scientificToDecimal();
+        BillConfigForm.billConfigData.RepeatCurrentCount=parseInt(await CONFIG.HttpRequest.GetBillProductCountFromPawn(this.pawnId,this.billId,this.billMapId)).scientificToDecimal();
     }
 
     async onRepeatModeChange(event){
@@ -509,15 +513,19 @@ export class BillConfigForm extends HandlebarsApplicationMixin(ApplicationV2){
     }
 
     GetFilter(){
-        let ingredientsFilterRoot = BillConfigForm.billConfigData.IngredientsConfig.IngredientsFilter;
-        let specialFilters= ingredientsFilterRoot.SpecialFilterJsons;
-        let categories = ingredientsFilterRoot.CategoryJson;
         let filter = [];
-        for(let i = 0; i < specialFilters.length; i++){
-            let specialFilter = specialFilters[i];
-            filter.push({DefName:specialFilter.DefName, Enabled:specialFilter.Allows, ThingDefOrSpecialFilter:true});
+        if(BillConfigForm.billConfigData.IngredientsConfig){
+
+            let ingredientsFilterRoot = BillConfigForm.billConfigData.IngredientsConfig.IngredientsFilter;
+            let specialFilters= ingredientsFilterRoot.SpecialFilterJsons;
+            let categories = ingredientsFilterRoot.CategoryJson;
+            
+            for(let i = 0; i < specialFilters.length; i++){
+                let specialFilter = specialFilters[i];
+                filter.push({DefName:specialFilter.DefName, Enabled:specialFilter.Allows, ThingDefOrSpecialFilter:true});
+            }
+            filter.push(...this.GetFilterFromCategories(categories));
         }
-        filter.push(...this.GetFilterFromCategories(categories));
         return filter;
     }
 
@@ -548,7 +556,7 @@ export class BillConfigForm extends HandlebarsApplicationMixin(ApplicationV2){
         event.preventDefault();
         console.log(button.dataset.recipeDef);
         
-        let thingDefInfo = JSON.parse(await CONFIG.csInterOP.SendHttpRequest("GET","getThingStatCard",button.dataset.recipeDef));
+        let thingDefInfo = JSON.parse(await CONFIG.HttpRequest.GetThingStatCard(button.dataset.recipeDef));
 
         let info = new GenericStatCardSheet(thingDefInfo);
         info.render({force:true});
