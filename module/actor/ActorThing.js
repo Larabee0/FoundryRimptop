@@ -308,7 +308,7 @@ export class ActorThing extends Actor {
             await dependentTokens[i].delete({deleteActor: true});
         }
         let preDelete = super._preDelete(options,user);
-        if(game.user._id===user.id){
+        if(game.user._id===user.id && this.system.thingID !== "InventoryActorDelete"){
             //console.log("Editor client!");
 
             await CONFIG.HttpRequest.DestroyThings(JSON.stringify([this.system.thingID]));
@@ -348,7 +348,7 @@ export class ActorThing extends Actor {
         }];
 
         var result = JSON.parse(await CONFIG.HttpRequest.SpawnThings(JSON.stringify(thingsToSpawn)));
-        if(result){
+        if(result && result.length > 0){
             await this.processSpawnResult(token,result[0]);
         }
         else{
@@ -361,7 +361,8 @@ export class ActorThing extends Actor {
             console.error("Cannot process spawn result without intended token");
             return;
         }
-        if(result.Success){
+        console.log(result);
+        if("Success"in result && result.Success){
             var posFoundry = token.convertFromRimWorldCoordinates(result.X,result.Y);
             if(result.ResultThingId !== this.system.thingID){
                 // thing id changed

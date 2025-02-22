@@ -402,6 +402,10 @@ export class CSHttpRequest{
         return await this.csInterOP.SendHttpRequest("POST","destroyThings",thingsToDestroy);
     }
 
+    async DestroyThingsCount(thingsToDestroy,quantitiesToDestroy){
+        return await this.csInterOP.SendHttpRequest("POST","destroyThings",thingsToDestroy,quantitiesToDestroy);
+    }
+
     async GetThingData(thingId){
         return await this.csInterOP.SendHttpRequest("GET","getThingData",thingId)
     }

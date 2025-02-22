@@ -9,7 +9,8 @@
             {{#unless HeldByWorld}}
             <button class="more-menu-button" data-action="sendToWorld">Send to world inventory</button>
             {{/unless}}
-            <button class="more-menu-button" data-action="selectPawn">Send to pawn</button>
+            <button class="more-menu-button" data-action="selectPawn">Send to other pawn</button>
+            <button class="more-menu-button" data-action="destroy">Destroy</button>
         </div>
         {{#if Spawned}}
         <button class="more-menu-button" data-action="despawn">Despawn</button>
@@ -21,7 +22,6 @@
     <div class="select-destination-pawn">
         <button class="more-menu-button" data-action="goBackFromSelectPawn">Back</button>
         {{#each targetablePawns}}
-        {{log this}}
         <button class="more-menu-button" data-action="pickPawn" data-pawn-id="{{pawnId}}" data-actor-id="{{actorId}}">{{Name}}</button>
         {{/each}}
     </div>

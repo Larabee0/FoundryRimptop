@@ -56,7 +56,10 @@ eventSource;
                 Hooks.on("deleteScene",async (scene)=>{
                     console.log("deleteScene");
                     var folder = this.GetSceneFolder(scene);
-                    await folder.delete({deleteSubfolders: true, deleteContents: true});
+                    if(folder){
+                        await folder.delete({deleteSubfolders: true, deleteContents: true});
+                    }
+                    
                     await CONFIG.HttpRequest.DeleteMap(scene._id);
                 });
                 Hooks.on("canvasReady",async ()=>{
@@ -72,7 +75,7 @@ eventSource;
                 }
                 else{
                     console.log("app is not loaded or world is wrong. Starting App");
-                    let res = await this.ConnectToRimWorldApp();
+                    let res = await CONFIG.HttpRequest.ConnectToRimWorldApp();
                     console.log(res);
                 }
             }
@@ -81,18 +84,18 @@ eventSource;
     }
     async handleMapUpdate(document,changed){
         console.log("updateScene");
-                    
+             
+        let scene = document;       
         if("name" in changed){
             var folder = this.GetSceneFolder(scene);
-            await folder.update({name: ("Scene: "+document.name)});
-            // console.log(folderId);
-            console.log(game.actors.folders.get(folderId));
+            if(folder){
+                await folder.update({name: ("Scene: "+document.name)});
+            }
         }
         
         if(changed.height || changed.width){
             let scenesForRW=[];
         
-            let scene = document;
             let dimensions = this.getSceneSize(scene);
             let mapData = {
                 Id: scene._id,
@@ -139,6 +142,8 @@ eventSource;
 
         var duplicateFolders = [];
 
+
+
         for(var i = 0; i < actorFolders.length; i++){
             var folderName = actorFolders[i].name;
             console.log(actorFolders[i]);
@@ -164,6 +169,14 @@ eventSource;
             await this.createActorFolder(worldInventoryFolder);
         }
 
+        var scenes = Array.from(game.scenes);
+        for(var i = 0; i < scenes.length; i++){
+            var scene = scenes[i];
+            if(!this.GetSceneFolder(scene)){
+                var sceneFolderId = await this.createActorFolder("Scene: "+scene.name);
+                scene.setFlag("rimtop","sceneFolder",sceneFolderId._id);
+            }
+        }
         //game.folders.createDocument()
     }
 
@@ -230,6 +243,9 @@ eventSource;
 
     GetSceneFolder(scene){
         var folderId = scene.getFlag("rimtop","sceneFolder");
+        if(!folderId){
+            return null;
+        }
         return this.GetActorFolderById(folderId);
     }
 
@@ -246,7 +262,7 @@ eventSource;
     async RestartRimWorldApplication(){
         let result =  this.SendHttpRequest("POST","restart");        
         await new Promise(resolve => setTimeout(resolve, 100));
-        await this.ConnectToRimWorldApp();
+        await CONFIG.HttpRequest.ConnectToRimWorldApp();
         return result;
     }
 
@@ -803,7 +819,7 @@ eventSource;
         
         console.log(String(thingsToDespawnInRimWorld.length)," things to despawn in rimworld");
         if(thingsToDespawnInRimWorld.length > 0){
-            var results = JSON.parse(await this.DespawnThing(JSON.stringify(thingsToDespawnInRimWorld)));
+            var results = JSON.parse(await CONFIG.HttpRequest.DespawnThing(JSON.stringify(thingsToDespawnInRimWorld)));
             for(var i = 0; i < results.length; i++){
                 var result = results[i];
                 if(result.Success){
@@ -853,7 +869,7 @@ eventSource;
             }
             console.log(String(thingsToSpawn.length)," things to spawn");
 
-            var results = JSON.parse(await this.SpawnThings(JSON.stringify(thingsToSpawn)));
+            var results = JSON.parse(await CONFIG.HttpRequest.SpawnThings(JSON.stringify(thingsToSpawn)));
 
             for(let i = 0; i < results.length; i++){
                 var targetActor = game.actors.get(unhandledTokens[i].actorId);

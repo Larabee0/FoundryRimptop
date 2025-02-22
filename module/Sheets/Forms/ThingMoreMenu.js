@@ -10,15 +10,17 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
             resizable:true
         },
         position: {
-          width: 125,
-          height: 250
+          width: 210,
+          height: 300
         },
         actions:{
             selectPawn:ThingMoreMenu.#onSelectPawn,
             goBackFromSelectPawn:ThingMoreMenu.#onGoBackFromSelectPawn,
             pickPawn:ThingMoreMenu.#sendToPawn,
             sendToScene:ThingMoreMenu.#sendToScene,
-            sendToWorld:ThingMoreMenu.#sendToWorld
+            sendToWorld:ThingMoreMenu.#sendToWorld,
+            destroy:ThingMoreMenu.#destroy,
+            despawn:ThingMoreMenu.#despawn
         }
     }
 
@@ -142,19 +144,22 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
         await this.SendToPawn(pawnId,this.targetThingId,this.transferCount);
         let destinationActor = game.actors.get(actorId);
         if(destinationActor){
-            destinationActor.updateGear();
+            await destinationActor.updateGear();
         }
         this.close();
     }
 
     async SendToPawn(pawnId, thingId,count){
+        //var data = await CONFIG.HttpRequest.TryAddToPawnInventory(pawnId,thingId,count)
         var thingData = JSON.parse(await CONFIG.HttpRequest.TryAddToPawnInventory(pawnId,thingId,count));
         var thindActorId = CONFIG.csInterOP.GetActorByThingId(thingId);
         if(thindActorId){
-            var thingActor =game.actors.get(thindActorId);
+            var thingActor = game.actors.get(thindActorId);
             if(thingData.ThingId === thingId){
                 // if the thingId is the same, a new thing was not made for the pawn inv,
                 // so if there is an actor associated with this thingId the actor needs deleting
+                this.onCloseAction = null;
+                await thingActor.setThingId("InventoryActorDelete");
                 await thingActor.delete();
             }
             else{
@@ -162,6 +167,48 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
                 await thingActor.updateDisplayedName();
             }
         }
+    }
+    
+    static async #despawn(event, button){
+        if(!this.thingSituation.HeldByPawn){
+            var thingActor =game.actors.get(CONFIG.csInterOP.GetActorByThingId(this.targetThingId));
+            if(thingActor){
+                await thingActor.clearSpawnedTokens();
+            }
+        }
+        this.close();
+    }
+
+    static async #destroy(event, button){
+        event.preventDefault();
+
+        var destroyResult = JSON.parse(await CONFIG.HttpRequest.DestroyThingsCount(JSON.stringify([this.targetThingId]),JSON.stringify([this.transferCount])));
+        for(var i = 0; i < destroyResult.length; i++){
+            var res = destroyResult[i];
+
+            if(res.Success && res.Destroyed){
+                
+                if(this.thingSituation.HeldByPawn){
+                    var pawnActor =game.actors.get(CONFIG.csInterOP.GetActorByThingId(this.thingSituation.HeldByPawn));
+                    if(pawnActor){
+                        await pawnActor.updateGear();
+                    }
+                }
+                else{
+                    var thingActor =game.actors.get(CONFIG.csInterOP.GetActorByThingId(this.targetThingId));
+                    if (!res.Merged){
+                        // delete corrisponding actor
+                        await thingActor.delete();
+                    }
+                    else{
+                        // update actor name
+                        await thingActor.updateDisplayedName();
+                    }
+                }
+            }
+        }
+        this.onCloseAction = null;
+        this.close();
     }
 
     static async #sendToWorld(event,button){
@@ -225,6 +272,7 @@ export class ThingMoreMenu extends HandlebarsApplicationMixin(ApplicationV2){
         var thingId = result.ResultThingId;
         if(result.Merged){
             if(thingActor){
+                this.onCloseAction = null;
                 await thingActor.delete();
             }
             thingActor =game.actors.get( CONFIG.csInterOP.GetActorByThingId(thingId));

@@ -270,7 +270,7 @@ export class SpawnThingSheet extends HandlebarsApplicationMixin(ApplicationV2) {
                     this.createActor=await this.createActor.setThingDef(defName);
                 }
             }
-            if("Spawned" in spawnResult){
+            if("Spawned" in spawnResult && spawnResult.Spawned){
                 this.giveToActor.setSpawned(spawnResult.Spawned);
             }
         }
